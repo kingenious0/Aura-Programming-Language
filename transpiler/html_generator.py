@@ -385,6 +385,8 @@ class HTMLGenerator:
             self._handle_theme(cmd)
         elif cmd.command_type.startswith('ui_'):
             self._handle_ui_element(cmd)
+        elif cmd.command_type == 'action_sequence':
+            self._handle_action_sequence(cmd)
         elif cmd.command_type.startswith('action_'):
             self._handle_action(cmd)
         elif cmd.command_type.startswith('modifier_'):
@@ -506,6 +508,80 @@ class HTMLGenerator:
 
         # Clear pending actions after attaching
         self.pending_actions = []
+
+    def _handle_action_sequence(self, cmd):
+        """Handle sequential actions with 'then' keyword"""
+        if not self.last_element_id:
+            print("Warning: Action defined without a preceding UI element")
+            return
+
+        event = cmd.data['event'].lower()
+        actions_string = cmd.data['actions']
+        element_id = self.last_element_id
+
+        # Map event names to JavaScript events
+        event_map = {
+            'clicked': 'click',
+            'click': 'click',
+            'submit': 'submit',
+            'hover': 'mouseenter',
+        }
+        js_event = event_map.get(event, 'click')
+
+        # Parse the action sequence inline (avoid circular import)
+        import re
+        action_parts = re.split(
+            r',\s*then\s+', actions_string, flags=re.IGNORECASE)
+
+        # Generate JavaScript code for each action
+        action_codes = []
+        for action_str in action_parts:
+            action_str = action_str.strip()
+
+            # Parse display/alert with quoted content
+            display_match = re.match(
+                r"(display|alert)\s+['\"]([^'\"]+)['\"]", action_str, re.IGNORECASE)
+            if display_match:
+                content = display_match.group(2)
+                action_codes.append(f"alert('{content}');")
+                continue
+
+            # Parse refresh the page
+            if re.match(r"refresh\s+the\s+page", action_str, re.IGNORECASE):
+                action_codes.append("location.reload();")
+                continue
+
+            # Parse clear the input
+            if re.match(r"clear\s+the\s+input", action_str, re.IGNORECASE):
+                action_codes.append(
+                    f"document.getElementById('{element_id}').value = '';")
+                continue
+
+            # Parse show/hide element
+            show_match = re.match(
+                r"(show|hide)\s+the\s+(\w+)", action_str, re.IGNORECASE)
+            if show_match:
+                action_type = show_match.group(1).lower()
+                if action_type == 'hide':
+                    action_codes.append(
+                        f"document.getElementById('{element_id}').style.display = 'none';")
+                else:
+                    action_codes.append(
+                        f"document.getElementById('{element_id}').style.display = 'block';")
+                continue
+
+            # Unknown action
+            action_codes.append(
+                f"console.log('Unknown action: {action_str}');")
+
+        # Combine all actions into a single event handler
+        all_actions = '\n            '.join(action_codes)
+        script = f"""
+        document.getElementById('{element_id}').addEventListener('{js_event}', function() {{
+            {all_actions}
+        }});
+        """
+        self.scripts.append(script)
 
     def _handle_modifier(self, cmd):
         """Handle action modifiers like 'And refresh the page'"""

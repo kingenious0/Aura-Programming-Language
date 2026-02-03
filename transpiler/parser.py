@@ -30,25 +30,13 @@ class AuraParser:
                 re.IGNORECASE
             ),
 
-            # Actions: When clicked, display 'Success!'
-            'action_display': re.compile(
-                r"When\s+(?P<event>\w+),\s*display\s+['\"](?P<content>[^'\"]+)['\"]",
+            # Actions with 'then' support: When clicked, display 'Success!', then clear the input, then refresh the page
+            'action_sequence': re.compile(
+                r"When\s+(?P<event>\w+),\s*(?P<actions>.+)",
                 re.IGNORECASE
             ),
 
-            # Actions: When clicked, alert 'Message'
-            'action_alert': re.compile(
-                r"When\s+(?P<event>\w+),\s*alert\s+['\"](?P<content>[^'\"]+)['\"]",
-                re.IGNORECASE
-            ),
-
-            # Actions: When clicked, refresh the page
-            'action_refresh': re.compile(
-                r"When\s+(?P<event>\w+),\s*refresh\s+the\s+page",
-                re.IGNORECASE
-            ),
-
-            # Modifier: And refresh the page
+            # Modifier: And refresh the page (kept for backward compatibility)
             'modifier_refresh': re.compile(
                 r"And\s+refresh\s+the\s+page",
                 re.IGNORECASE
@@ -179,6 +167,73 @@ class AuraParser:
                 )
 
         return None
+
+    def parse_action_sequence(self, actions_string: str) -> List[Dict[str, Any]]:
+        """
+        Parse a sequence of actions separated by 'then'
+
+        Args:
+            actions_string: String containing actions like "display 'X', then clear the input, then refresh the page"
+
+        Returns:
+            List of action dictionaries with 'type' and 'params'
+        """
+        # Split by ', then ' to get individual actions
+        action_parts = re.split(
+            r',\s*then\s+', actions_string, flags=re.IGNORECASE)
+
+        parsed_actions = []
+
+        for action_str in action_parts:
+            action_str = action_str.strip()
+
+            # Parse display/alert with quoted content
+            display_match = re.match(
+                r"(display|alert)\s+['\"]([^'\"]+)['\"]", action_str, re.IGNORECASE)
+            if display_match:
+                action_type = display_match.group(1).lower()
+                content = display_match.group(2)
+                parsed_actions.append({
+                    'type': action_type,
+                    'params': {'content': content}
+                })
+                continue
+
+            # Parse refresh the page
+            if re.match(r"refresh\s+the\s+page", action_str, re.IGNORECASE):
+                parsed_actions.append({
+                    'type': 'refresh',
+                    'params': {}
+                })
+                continue
+
+            # Parse clear the input
+            if re.match(r"clear\s+the\s+input", action_str, re.IGNORECASE):
+                parsed_actions.append({
+                    'type': 'clear_input',
+                    'params': {}
+                })
+                continue
+
+            # Parse show/hide element
+            show_match = re.match(
+                r"(show|hide)\s+the\s+(\w+)", action_str, re.IGNORECASE)
+            if show_match:
+                action_type = show_match.group(1).lower()
+                element = show_match.group(2)
+                parsed_actions.append({
+                    'type': action_type,
+                    'params': {'element': element}
+                })
+                continue
+
+            # If no pattern matches, add as unknown action
+            parsed_actions.append({
+                'type': 'unknown',
+                'params': {'raw': action_str}
+            })
+
+        return parsed_actions
 
     def validate_commands(self, commands: List[AuraCommand]) -> bool:
         """

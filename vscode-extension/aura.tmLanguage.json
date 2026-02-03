@@ -44,7 +44,7 @@
       "patterns": [
         {
           "name": "keyword.control.aura",
-          "match": "\\b(Create|Use|When|And|Put|Ask|Go)\\b"
+          "match": "\\b(Create|Use|When|And|Put|Ask|Go|then)\\b"
         }
       ]
     },
@@ -60,7 +60,7 @@
       "patterns": [
         {
           "name": "keyword.control.action.aura",
-          "match": "\\b(clicked|display|alert|refresh|show|hide|hover|submit)\\b"
+          "match": "\\b(clicked|display|alert|refresh|show|hide|hover|submit|clear)\\b"
         },
         {
           "name": "support.function.aura",

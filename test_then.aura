@@ -1,0 +1,28 @@
+# Testing 'then' Keyword for Sequential Actions
+
+Use the dark theme
+
+# Test 1: Display then refresh
+Create a heading with the text 'Sequential Actions Test'
+Create a button with the text 'Test Display Then Refresh'
+When clicked, display 'Action completed!', then refresh the page
+
+# Test 2: Display then clear input
+Create a paragraph with the text 'Enter your name and click submit'
+Create an input with the text 'Enter your name'
+Create a button with the text 'Submit'
+When clicked, display 'Form submitted!', then clear the input
+
+# Test 3: Multiple actions chained
+Create a heading with the text 'Multi-Step Action'
+Create an input with the text 'Type something'
+Create a button with the text 'Process'
+When clicked, display 'Processing...', then clear the input, then refresh the page
+
+# Test 4: Simple alert then refresh
+Create a button with the text 'Alert and Reload'
+When clicked, alert 'This will reload the page', then refresh the page
+
+# Test 5: Display active status
+Create a button with the text 'Activate'
+When clicked, display 'Active', then clear the input

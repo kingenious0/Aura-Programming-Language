@@ -1,0 +1,74 @@
+{
+  "name": "aura-language",
+  "displayName": "Aura Language Support",
+  "description": "Syntax highlighting and language support for Aura programming language",
+  "version": "1.0.0",
+  "publisher": "aura-lang",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "aura",
+    "transpiler",
+    "natural language",
+    "web development"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kingenious0/Aura-Programming-Language.git"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "aura",
+        "aliases": [
+          "Aura",
+          "aura"
+        ],
+        "extensions": [
+          ".aura"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/aura-icon.png",
+          "dark": "./icons/aura-icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "aura",
+        "scopeName": "source.aura",
+        "path": "./aura.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "aura",
+        "path": "./snippets/aura.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "aura.transpile",
+        "title": "Aura: Transpile",
+        "category": "Aura"
+      },
+      {
+        "command": "aura.watch",
+        "title": "Aura: Start Watch Mode",
+        "category": "Aura"
+      }
+    ]
+  },
+  "main": "./extension.js",
+  "scripts": {
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0"
+  }
+}

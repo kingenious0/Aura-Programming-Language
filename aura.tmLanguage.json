@@ -1,0 +1,96 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Aura",
+  "scopeName": "source.aura",
+  "fileTypes": [
+    "aura"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#ui-elements"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#themes"
+    },
+    {
+      "include": "#actions"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.aura",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.aura",
+          "match": "\\b(Create|Use|When|And)\\b"
+        }
+      ]
+    },
+    "ui-elements": {
+      "patterns": [
+        {
+          "name": "entity.name.tag.aura",
+          "match": "\\b(button|heading|paragraph|card|input|form|div|section|container)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.aura",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.aura",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.aura",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.aura",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "themes": {
+      "patterns": [
+        {
+          "name": "support.constant.aura",
+          "match": "\\b(dark|light|default)\\s+theme\\b"
+        }
+      ]
+    },
+    "actions": {
+      "patterns": [
+        {
+          "name": "support.function.aura",
+          "match": "\\b(clicked|display|alert|refresh)\\b"
+        }
+      ]
+    }
+  }
+}

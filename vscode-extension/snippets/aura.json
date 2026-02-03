@@ -1,0 +1,73 @@
+{
+  "Create Button": {
+    "prefix": "btn",
+    "body": [
+      "Create a button with the text '$1'",
+      "When clicked, display '$2'"
+    ],
+    "description": "Create a button with click handler"
+  },
+  "Create Heading": {
+    "prefix": "h1",
+    "body": [
+      "Create a heading with the text '$1'"
+    ],
+    "description": "Create a heading element"
+  },
+  "Create Paragraph": {
+    "prefix": "p",
+    "body": [
+      "Create a paragraph with the text '$1'"
+    ],
+    "description": "Create a paragraph element"
+  },
+  "Create Input": {
+    "prefix": "input",
+    "body": [
+      "Create a input with the text '$1'"
+    ],
+    "description": "Create an input field"
+  },
+  "Use Dark Theme": {
+    "prefix": "dark",
+    "body": [
+      "Use the dark theme"
+    ],
+    "description": "Apply dark theme"
+  },
+  "Use Light Theme": {
+    "prefix": "light",
+    "body": [
+      "Use the light theme"
+    ],
+    "description": "Apply light theme"
+  },
+  "When Clicked": {
+    "prefix": "click",
+    "body": [
+      "When clicked, display '$1'"
+    ],
+    "description": "Add click event handler"
+  },
+  "Create Card": {
+    "prefix": "card",
+    "body": [
+      "Create a card with the text '$1'"
+    ],
+    "description": "Create a card element"
+  },
+  "Full Page Template": {
+    "prefix": "aura-template",
+    "body": [
+      "# ${1:App Name}",
+      "",
+      "Use the ${2:dark} theme",
+      "",
+      "Create a heading with the text '${3:Welcome}'",
+      "Create a paragraph with the text '${4:Description}'",
+      "Create a button with the text '${5:Get Started}'",
+      "When clicked, display '${6:Success!}'"
+    ],
+    "description": "Full Aura page template"
+  }
+}

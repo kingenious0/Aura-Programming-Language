@@ -1,0 +1,50 @@
+# Aura Language - Complete Feature Demo
+# This file demonstrates all supported Aura commands
+
+# Theme Selection
+Use the dark theme
+
+# Variables
+The user's name is 'John Doe'
+The app's title is 'Aura Demo'
+
+# Headings
+Create a heading with the text 'Welcome to Aura Programming Language'
+
+# Paragraphs
+Create a paragraph with the text 'Build beautiful web applications using natural English commands!'
+
+# Buttons with Actions
+Create a button with the text 'Say Hello'
+When clicked, display 'Hello from Aura!'
+
+Create a button with the text 'Show Alert'
+When clicked, alert 'This is an alert message!'
+
+Create a button with the text 'Refresh Page'
+When clicked, refresh the page
+
+# Input Fields
+Create an input with the text 'Enter your name'
+Create an input with the text 'Enter your email'
+
+# Cards
+Create a card with the title 'Feature 1' and description 'Aura uses natural language syntax'
+Create a card with the title 'Feature 2' and description 'Professional HTML output with modern design'
+Create a card with the title 'Feature 3' and description 'Multiple themes: dark, light, and default'
+
+# Images
+Create an image from 'https://via.placeholder.com/600x300'
+Create an image with the url 'https://via.placeholder.com/400x200' and alt 'Demo Image'
+
+# Complex Button with Multiple Actions
+Create a button with the text 'Submit Form'
+When clicked, display 'Form submitted successfully!'
+And refresh the page
+
+# More UI Elements
+Create a heading with the text 'Contact Us'
+Create a paragraph with the text 'Fill out the form below to get in touch'
+Create an input with the text 'Your message'
+Create a button with the text 'Send Message'
+When clicked, alert 'Message sent! Thank you for contacting us.'

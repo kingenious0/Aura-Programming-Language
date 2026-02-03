@@ -15,6 +15,6 @@ Create a paragraph with the text 'I sell waakye and beans'
 Create a button with the text 'Contact Me'
 When clicked, display 'I sell waakye and beans'
 Create a input with the text 'Your Name'
-create a button with the text 'Submit'
-When clicked, display 'Form submitted successfully!' 
+Create a button with the text 'Submit'
+When clicked,refresh the page
 And refresh the page

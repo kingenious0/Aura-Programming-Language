@@ -1,0 +1,9 @@
+# Quick Demo
+# This will create a simple portfolio page
+
+Use the dark theme
+
+Create a heading with the text 'Welcome to Aura Watch Mode! ⚡'
+Create a paragraph with the text 'This file is being watched. Try editing and saving it!'
+Create a button with the text 'Test Button'
+When clicked, display 'Watch mode is working perfectly! 🎉'

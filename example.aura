@@ -1,0 +1,22 @@
+# Example Aura Program
+# This demonstrates all the features of Aura v1.0
+
+# Set the theme
+Use the dark theme
+
+# Define some variables
+The user's name is 'Akwasi'
+The app's title is 'Welcome to Aura'
+
+# Create UI elements
+Create a heading with the text 'Welcome to Aura Programming Language'
+Create a paragraph with the text 'This is a revolutionary way to code using natural English!'
+Create a button with the text 'Click Me'
+
+# Add interactivity
+When clicked, display 'Hello from Aura! 🎉'
+
+# More UI elements
+Create a input with the text 'Enter your name'
+Create a button with the text 'Submit'
+When clicked, display 'Form submitted successfully!'

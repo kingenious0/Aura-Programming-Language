@@ -1,0 +1,20 @@
+# Simple Aura Test
+# Testing the light theme
+
+Use the dark theme
+
+Create a heading with the text 'My First Aura App and its going to be epic'
+Create a paragraph with the text 'Building apps has never been easier!'
+Create a button with the text 'Get Started'
+When clicked, display 'Welcome aboard!'
+Create a button with the text 'About Me'
+When clicked, display 'I sell waakye and beans'
+
+Create a heading with the text 'About Me'
+Create a paragraph with the text 'I sell waakye and beans'
+Create a button with the text 'Contact Me'
+When clicked, display 'I sell waakye and beans'
+Create a input with the text 'Your Name'
+create a button with the text 'Submit'
+When clicked, display 'Form submitted successfully!' 
+And refresh the page

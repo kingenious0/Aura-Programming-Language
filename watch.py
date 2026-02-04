@@ -54,7 +54,8 @@ class AuraWatcher(FileSystemEventHandler):
         try:
             # Run the transpiler
             result = subprocess.run(
-                [sys.executable, 'transpiler/transpiler.py', str(file_path)],
+                [sys.executable, 'transpiler/transpiler.py',
+                    'build', str(file_path)],
                 capture_output=True,
                 text=True,
                 encoding='utf-8',

@@ -1,0 +1,3 @@
+Create a card with the title 'Good' and description 'Good is a card with a title and description'
+Create a button with the text 'Go back home'
+When clicked, go to 'https://x.com' in a new tab

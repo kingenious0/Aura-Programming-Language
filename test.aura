@@ -11,10 +11,9 @@ Create a button with the text 'About Me'
 When clicked, display 'I sell waakye and beans'
 
 Create a heading with the text 'About Me'
-Create a paragraph with the text 'I sell waakye and beans'
+Create a paragraph with the text ''
 Create a button with the text 'Contact Me'
 When clicked, display 'I sell waakye and beans'
 Create a input with the text 'Your Name'
 Create a button with the text 'Submit'
-When clicked,refresh the page
-And refresh the page
+When clicked, wait 2 seconds, then alert 'processing...', then display 'Form submitted successfully!', then clear the input, then refresh the page

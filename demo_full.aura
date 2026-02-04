@@ -1,6 +1,7 @@
 # Aura Language - Complete Feature Demo
 # This file demonstrates all supported Aura commands
-
+The app's title is 'Aura Demo'
+Create a global navbar with logo 'Aura' and links [Home, Demo, About, Example, Good]
 # Theme Selection
 Use the dark theme
 
@@ -44,7 +45,14 @@ And refresh the page
 
 # More UI Elements
 Create a heading with the text 'Contact Us'
+Align the text to the right
 Create a paragraph with the text 'Fill out the form below to get in touch'
 Create an input with the text 'Your message'
 Create a button with the text 'Send Message'
 When clicked, alert 'Message sent! Thank you for contacting us.'
+
+Create a card with the title 'Waakye is nice' and description 'Waakye is a Ghanaian dish made from rice and beans cooked together. It is a popular breakfast dish in Ghana and is often served with a variety of side dishes.'
+Underline the title 'Waakye is nice'
+Create a button with the text 'Show Waakye Card'
+When clicked, show the Waakye Card
+When clicked, refresh the page

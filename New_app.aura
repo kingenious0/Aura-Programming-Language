@@ -1,0 +1,14 @@
+#The user's name is King
+Use the dark theme
+Create a heading with the text 'Welcome to Aura! The New Ultimate Programming Language Built with determination by Kingenious Creative Studio'
+Create a paragraph with the text 'Building apps has never been easier like this!'
+
+Create a button with the text 'Get Started'
+Make the button black and big
+When clicked, wait 3 seconds, then display 'Welcome to Aura! You are a pro now'
+then refresh the page, then display 'Start Coding'
+
+Create a heading with the text 'About Kingenious'
+Create a button with the text 'About Me'
+Make the button white and small
+When clicked, go to 'https://kcs-portfolio-seven.vercel.app/' in a new tab

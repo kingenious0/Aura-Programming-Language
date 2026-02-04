@@ -1,0 +1,46 @@
+# Testing New Natural Language Commands
+
+Use the dark theme
+
+Create a heading with the text 'Natural Language Test'
+Create a paragraph with the text 'This is a test of the new natural language commands.'
+
+# Styling
+Create a button with the text 'Red Button'
+Make the button red
+
+Create a button with the text 'Big Button'
+Make the button bigger
+
+# Visibility
+Create a button with the text 'Hidden Button'
+Hide the button
+
+Create a button with the text 'Show Hidden'
+When clicked, show the Hidden Button
+
+# Interactions
+Create an input with the text 'Focus Test'
+Create a button with the text 'Focus It'
+When clicked, focus on the input
+
+Create a button with the text 'Wait Test'
+When clicked, display 'Waiting...', then wait 2 seconds, then display 'Done!'
+
+# Text Manipulation
+Create a heading with the text 'Old Text'
+Create a button with the text 'Change Text'
+When clicked, change the heading to 'New Text'
+
+# Navigation
+Create a button with the text 'Google'
+When clicked, go to 'https://google.com'
+
+# Clipboard
+Create a button with the text 'Copy Me'
+When clicked, copy 'Hello World' to clipboard, then display 'Copied!'
+
+# Animation
+Create a card with the title 'Fade Card'
+Create a button with the text 'Fade Out'
+When clicked, fade out the card

@@ -44,7 +44,7 @@
       "patterns": [
         {
           "name": "keyword.control.aura",
-          "match": "\\b(Create|Use|When|And|Put|Ask|Go|then)\\b"
+          "match": "\\b(Create|Use|When|And|Put|Ask|Go|then|Make|Change|Update|Set|Focus|Disable|Enable|Check|Get|Save|Load|Clear|Copy|Show|Hide|Display|Fade|Slide|Bounce|Increase|Decrease|Wait|Toggle|Scroll|Open)\\b"
         }
       ]
     },
@@ -60,7 +60,7 @@
       "patterns": [
         {
           "name": "keyword.control.action.aura",
-          "match": "\\b(clicked|display|alert|refresh|show|hide|hover|submit|clear)\\b"
+          "match": "\\b(clicked|display|alert|refresh|show|hide|hover|submit|clear|focus|disable|enable|check|get|save|load|copy|fade|slide|bounce|increase|decrease|wait|toggle|scroll|open|change|update|set|make)\\b"
         },
         {
           "name": "support.function.aura",

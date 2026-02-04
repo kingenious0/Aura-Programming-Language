@@ -4,19 +4,23 @@
 # Set the theme
 Use the dark theme
 
-# Define some variables
+# Define some variabless
 The user's name is 'Akwasi'
-The app's title is 'Welcome to Aura'
+The app's title is 'Welcome to Aura By Kingenious Creative Studio'
 
 # Create UI elements
 Create a heading with the text 'Welcome to Aura Programming Language'
+Align the heading to the center
 Create a paragraph with the text 'This is a revolutionary way to code using natural English!'
-Create a button with the text 'Click Me'
+Create a button with the text 'Click Me Here'
 
 # Add interactivity
 When clicked, display 'Hello from Aura! 🎉'
 
 # More UI elements
 Create a input with the text 'Enter your name'
-Create a button with the text 'Submit'
+Create a button with the text 'Submit Form'
 When clicked, display 'Form submitted successfully!'
+
+Create a button with the text 'About Me'
+When clicked, go to page 'about' in a new tab

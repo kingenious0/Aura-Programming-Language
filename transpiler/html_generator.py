@@ -146,9 +146,13 @@ class HTMLGenerator:
         react_event = 'onClick' if 'click' in event else 'onChange' if 'change' in event else 'onMouseEnter'
 
         try:
-            from parser import AuraParser
-        except:
-            from transpiler.parser import AuraParser
+            from .aura_parser import AuraParser
+        except ImportError:
+            try:
+                from aura_parser import AuraParser
+            except ImportError:
+                # Fallback for when running as script vs module
+                from transpiler.aura_parser import AuraParser
 
         parser = AuraParser()
         parsed = parser.parse_action_sequence(cmd.data['actions'])

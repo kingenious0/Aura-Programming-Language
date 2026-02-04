@@ -16,16 +16,16 @@ export default function App() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<About />} />
+        <Route path="/about" element={<About />} />
 <Route path="/demo" element={<Demo />} />
-<Route path="/demo_full" element={<Demofull />} />
+<Route path="/" element={<Demofull />} />
 <Route path="/example" element={<Example />} />
 <Route path="/good" element={<Good />} />
 <Route path="/new_app" element={<Newapp />} />
 <Route path="/test" element={<Test />} />
 <Route path="/test_nl" element={<Testnl />} />
 <Route path="/test_then" element={<Testthen />} />
-        <Route path="*" element={<About />} />
+        <Route path="*" element={<Demofull />} />
       </Routes>
     </>
   );

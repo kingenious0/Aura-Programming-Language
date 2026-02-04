@@ -5,8 +5,13 @@ import json
 import subprocess
 import glob
 from pathlib import Path
-from parser import AuraParser
-from html_generator import HTMLGenerator
+try:
+    from .aura_parser import AuraParser
+    from .html_generator import HTMLGenerator
+except ImportError:
+    from aura_parser import AuraParser
+    from html_generator import HTMLGenerator
+
 
 class AuraTranspiler:
     ENGINE_DIR = ".aura_engine"
@@ -17,39 +22,43 @@ class AuraTranspiler:
     def build(self, input_file: str):
         """Builds the entire project (Multi-page support + Global Navbar)"""
         print(f"[Aura] Project Build v4.0")
-        
+
         if not os.path.exists(input_file):
             print(f"[Error] File not found: {input_file}")
             return False
-            
+
         home_page_name = Path(input_file).stem
         input_dir = os.path.dirname(os.path.abspath(input_file))
         aura_files = glob.glob(os.path.join(input_dir, "*.aura"))
-        
-        print(f"[Scan] Found {len(aura_files)} pages: {[Path(f).stem for f in aura_files]}")
-        
-        pages = {} 
-        global_navbar = None # { 'links': 'Home, About', 'logo': '...' }
-        
+
+        print(
+            f"[Scan] Found {len(aura_files)} pages: {[Path(f).stem for f in aura_files]}")
+
+        pages = {}
+        global_navbar = None  # { 'links': 'Home, About', 'logo': '...' }
+
         try:
             for file_path in aura_files:
                 name = Path(file_path).stem
-                clean_name = name.replace(' ', '').replace('_', '').replace('-', '')
-                comp_name = clean_name[0].upper() + clean_name[1:] if clean_name else "Page"
-                if not comp_name[0].isalpha(): comp_name = "Page" + comp_name
-                
+                clean_name = name.replace(' ', '').replace(
+                    '_', '').replace('-', '')
+                comp_name = clean_name[0].upper(
+                ) + clean_name[1:] if clean_name else "Page"
+                if not comp_name[0].isalpha():
+                    comp_name = "Page" + comp_name
+
                 print(f"  - Compiling {name} -> {comp_name}...")
                 commands = self.parser.parse_file(file_path)
-                
+
                 # Check for Global Navbar Definition
                 for cmd in commands:
                     if cmd.command_type == 'ui_navbar':
                         global_navbar = cmd.data
-                
+
                 generator = HTMLGenerator(component_name=comp_name)
                 jsx = generator.generate(commands)
                 pages[name] = {'comp': comp_name, 'code': jsx}
-                
+
         except Exception as e:
             print(f"[Error] Compilation Failed: {e}")
             return False
@@ -58,14 +67,14 @@ class AuraTranspiler:
 
         pages_dir = os.path.join(self.ENGINE_DIR, 'src', 'pages')
         os.makedirs(pages_dir, exist_ok=True)
-        
+
         for name, data in pages.items():
             out_path = os.path.join(pages_dir, f"{data['comp']}.jsx")
             self._write_file(out_path, data['code'])
-            
+
         # Generate Router and Navbar
         self._generate_router(pages, home_page_name, global_navbar)
-        
+
         print("[Build] Project Updated.")
         return True
 
@@ -73,34 +82,35 @@ class AuraTranspiler:
         if not self.build(input_file):
             return
 
-        router_path = os.path.join(self.ENGINE_DIR, 'node_modules', 'react-router-dom')
+        router_path = os.path.join(
+            self.ENGINE_DIR, 'node_modules', 'react-router-dom')
         if not os.path.exists(os.path.join(self.ENGINE_DIR, 'node_modules')) or not os.path.exists(router_path):
             print("[Install] Installing dependencies (including Router)...")
             self._run_npm(['install'])
-        
+
         print("[Launch] Application...")
         print("Press Ctrl+C to stop.")
         self._run_npm(['run', 'dev', '--', '--open'], block=True)
 
     def _generate_router(self, pages, home_page_name, navbar_config=None):
         """Generates App.jsx and Navbar.jsx if needed"""
-        
+
         imports = []
         routes = []
         home_comp = None
-        
+
         for name, data in pages.items():
             comp = data['comp']
             imports.append(f"import {comp} from './pages/{comp}';")
             path = f"/{name.lower()}"
             if name == home_page_name:
-                path = "/" 
+                path = "/"
                 home_comp = comp
             routes.append(f'<Route path="{path}" element={{<{comp} />}} />')
-            
+
         navbar_import = ""
         navbar_element = ""
-        
+
         if navbar_config:
             self._generate_navbar_component(navbar_config)
             navbar_import = "import Navbar from './components/Navbar';"
@@ -123,21 +133,22 @@ export default function App() {{
   );
 }}
 """
-        self._write_file(os.path.join(self.ENGINE_DIR, 'src', 'App.jsx'), router_code)
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'src', 'App.jsx'), router_code)
 
     def _generate_navbar_component(self, config):
         """Generates the Navbar.jsx component"""
         components_dir = os.path.join(self.ENGINE_DIR, 'src', 'components')
         os.makedirs(components_dir, exist_ok=True)
-        
+
         links_str = config['links']
         links_list = [l.strip() for l in links_str.split(',')]
         logo = config.get('logo', 'Aura App')
-        
+
         # Generate generic link logic
         links_jsx = ""
         mobile_links_jsx = ""
-        
+
         for link in links_list:
             path = "/" if link.lower() == 'home' else f"/{link.lower()}"
             # Desktop Link
@@ -194,17 +205,18 @@ export default function Navbar() {{
   );
 }}
 """
-        self._write_file(os.path.join(components_dir, 'Navbar.jsx'), navbar_code)
+        self._write_file(os.path.join(
+            components_dir, 'Navbar.jsx'), navbar_code)
 
     def _ensure_engine_structure(self):
         if not os.path.exists(self.ENGINE_DIR):
             os.makedirs(self.ENGINE_DIR)
-        
+
         # NOTE: Excluding full template for brevity in this update, assuming key files handled in _write_file
         # But we must write main.jsx, tailwind, etc.
         # I'll rely on the fact that they are already written, OR re-write them to be safe.
         # Re-writing minimal needed.
-        
+
         main_jsx = """import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
@@ -225,14 +237,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         src_dir = os.path.join(self.ENGINE_DIR, 'src')
         os.makedirs(src_dir, exist_ok=True)
         self._write_file(os.path.join(src_dir, 'main.jsx'), main_jsx)
-        
+
         # Package.json handling to ensure router/lucide
         package_json = {
             "name": "aura-engine",
             "private": True,
             "version": "2.0.0",
             "type": "module",
-            "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+            "scripts": {"dev": "vite", "build": "vite build", "preview": "vite preview"},
             "dependencies": {
                 "react": "^18.2.0",
                 "react-dom": "^18.2.0",
@@ -246,8 +258,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 "postcss": "^8.4.27", "tailwindcss": "^3.3.3", "vite": "^4.4.5"
             }
         }
-        self._write_file(os.path.join(self.ENGINE_DIR, 'package.json'), json.dumps(package_json, indent=2))
-        
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'package.json'), json.dumps(package_json, indent=2))
+
         # Configs
         vite_config = "import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\nexport default defineConfig({ plugins: [react()], server: { hmr: { overlay: false } } })"
         index_html = "<!doctype html><html lang='en'><head><meta charset='UTF-8' /><meta name='viewport' content='width=device-width, initial-scale=1.0' /><title>Aura App</title></head><body><div id='root'></div><script type='module' src='/src/main.jsx'></script></body></html>"
@@ -256,12 +269,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         postcss_config = "export default { plugins: { tailwindcss: {}, autoprefixer: {}, }, }"
         error_boundary = "import React from 'react';\nclass ErrorBoundary extends React.Component {\n  constructor(props) { super(props); this.state = { hasError: false, error: null }; }\n  static getDerivedStateFromError(error) { return { hasError: true, error }; }\n  render() { if (this.state.hasError) return <div className='p-10 text-red-500'>Aura Error: {this.state.error.toString()}</div>; return this.props.children; }\n}\nexport default ErrorBoundary;"
 
-        self._write_file(os.path.join(self.ENGINE_DIR, 'vite.config.js'), vite_config)
-        self._write_file(os.path.join(self.ENGINE_DIR, 'index.html'), index_html)
-        self._write_file(os.path.join(self.ENGINE_DIR, 'tailwind.config.js'), tailwind_config)
-        self._write_file(os.path.join(self.ENGINE_DIR, 'postcss.config.js'), postcss_config)
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'vite.config.js'), vite_config)
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'index.html'), index_html)
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'tailwind.config.js'), tailwind_config)
+        self._write_file(os.path.join(
+            self.ENGINE_DIR, 'postcss.config.js'), postcss_config)
         self._write_file(os.path.join(src_dir, 'index.css'), index_css)
-        self._write_file(os.path.join(src_dir, 'ErrorBoundary.jsx'), error_boundary)
+        self._write_file(os.path.join(
+            src_dir, 'ErrorBoundary.jsx'), error_boundary)
 
     def _write_file(self, path, content):
         if os.path.exists(path):
@@ -269,7 +287,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 with open(path, 'r', encoding='utf-8') as f:
                     if f.read() == content:
                         return
-            except: pass
+            except:
+                pass
         with open(path, 'w', encoding='utf-8') as f:
             f.write(content)
 
@@ -287,14 +306,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         except:
             pass
 
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: aura [run|build] <filename.aura>")
         sys.exit(1)
-        
+
     command = sys.argv[1]
     transpiler = AuraTranspiler()
-    
+
     if command == "run" and len(sys.argv) > 2:
         transpiler.run(sys.argv[2])
     elif command == "build" and len(sys.argv) > 2:
@@ -303,6 +323,7 @@ def main():
         transpiler.run(command)
     else:
         print(f"Unknown command: {command}")
+
 
 if __name__ == "__main__":
     main()

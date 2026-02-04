@@ -74,7 +74,7 @@ class AuraParser:
 
             # UI: Create a card with the title 'Title' and description 'Desc'
             'ui_card': re.compile(
-                r"Create\s+a\s+card\s+with\s+the\s+title\s+['\"](?P<title>[^'\"]+)['\"](?:\s+and\s+description\s+['\"](?P<description>[^'\"]+)['\"])?",
+                r"Create\s+a\s+card\s+with\s+(?:the\s+)?title\s+['\"](?P<title>[^'\"]+)['\"](?:\s+and\s+(?:the\s+)?description\s+['\"](?P<description>[^'\"]+)['\"])?",
                 re.IGNORECASE
             ),
 
@@ -336,47 +336,82 @@ class AuraParser:
 
     def parse_file(self, filepath: str) -> List[AuraCommand]:
         """
-        Parse an Aura file and return a list of commands
-
-        Args:
-            filepath: Path to the .aura file
-
-        Returns:
-            List of AuraCommand objects
+        Parse an Aura file and return a list of commands.
+        If the Brain fixes any syntax, it updates the source file automatically.
         """
         commands = []
+        modified_lines = []
+        corrections_made = False
 
         try:
+            # Read all lines first
             with open(filepath, 'r', encoding='utf-8') as file:
-                for line_num, line in enumerate(file, start=1):
-                    line = line.strip()
+                lines = file.readlines()
 
-                    # Skip empty lines and comments
-                    if not line or line.startswith('#'):
+            for line_num, original_line_with_newline in enumerate(lines, start=1):
+                line = original_line_with_newline.strip()
+
+                # Preserve empty lines and comments in the output
+                if not line or line.startswith('#'):
+                    modified_lines.append(
+                        original_line_with_newline.rstrip('\n'))
+                    continue
+
+                # Handle 'then' continuation (logic remains for commands list, but line stays same)
+                if line.lower().startswith('then ') and commands:
+                    last_cmd = commands[-1]
+                    if last_cmd.command_type == 'action_sequence':
+                        last_cmd.data['actions'] += ", " + line
+                        last_cmd.raw_line += "\n" + line
+                        # We don't change the file for 'then' lines, assume they are valid or brain doesn't touch them yet
+                        modified_lines.append(line)
                         continue
 
-                    # Handle 'then' continuation for chaining actions across lines
-                    if line.lower().startswith('then ') and commands:
-                        last_cmd = commands[-1]
-                        if last_cmd.command_type == 'action_sequence':
-                            # Append to the previous action sequence
-                            # Removing 'then' usually redundant if we append ', then '
-                            # But wait, logic splits by ', then '.
-                            # If line is "then display X", we append ", then display X".
-                            # Regex split uses r',\s*then\s+'.
-                            # So appending ", " + line works.
-                            # line = "then display X".
-                            # actions += ", then display X"
-                            last_cmd.data['actions'] += ", " + line
-                            last_cmd.raw_line += "\n" + line
+                command = self._parse_line(line, line_num)
+                if command:
+                    commands.append(command)
+                    modified_lines.append(line)
+                else:
+                    # 🧠 Aura Brain: Autocorrect
+                    corrected = None
+                    try:
+                        # Lazy import
+                        if not hasattr(self, 'brain'):
+                            try:
+                                from .brain import AuraBrain
+                                self.brain = AuraBrain()
+                            except ImportError:
+                                from brain import AuraBrain
+                                self.brain = AuraBrain()
+
+                        corrected = self.brain.fix_syntax(line)
+                    except:
+                        pass
+
+                    if corrected and corrected != line:
+                        # Verify the correction is valid
+                        retry_cmd = self._parse_line(corrected, line_num)
+                        if retry_cmd:
+                            print(
+                                f"  ✨ [Aura Brain] Auto-corrected: '{line}' -> '{corrected}'")
+                            commands.append(retry_cmd)
+                            modified_lines.append(corrected)  # Save the fix
+                            corrections_made = True
                             continue
 
-                    command = self._parse_line(line, line_num)
-                    if command:
-                        commands.append(command)
-                    else:
-                        print(
-                            f"Warning: Unrecognized command on line {line_num}: {line}")
+                    # If we couldn't fix it, keep original list
+                    print(
+                        f"Warning: Unrecognized command on line {line_num}: {line}")
+                    modified_lines.append(line)
+
+            # Write improvements back to file if needed
+            if corrections_made:
+                try:
+                    with open(filepath, 'w', encoding='utf-8') as f:
+                        f.write('\n'.join(modified_lines) + '\n')
+                    print(f"  📝 [Source Update] Applied fixes to {filepath}")
+                except Exception as e:
+                    print(f"  ⚠️ [Error] Could not update source file: {e}")
 
         except FileNotFoundError:
             raise FileNotFoundError(f"Aura file not found: {filepath}")

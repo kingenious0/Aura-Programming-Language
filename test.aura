@@ -11,7 +11,7 @@ Create a button with the text 'About Me'
 When clicked, display 'I sell waakye and beans'
 
 Create a heading with the text 'About Me'
-Create a paragraph with the text ''
+Create a paragraph with the text "Create a paragraph with the text".
 Create a button with the text 'Contact Me'
 When clicked, display 'I sell waakye and beans'
 Create a input with the text 'Your Name'

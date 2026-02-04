@@ -52,9 +52,9 @@ class AuraWatcher(FileSystemEventHandler):
         print(f"[BUILD] Transpiling at {time.strftime('%H:%M:%S')}...")
 
         try:
-            # Run the transpiler
+            # Run the transpiler as a module
             result = subprocess.run(
-                [sys.executable, 'transpiler/transpiler.py',
+                [sys.executable, '-m', 'transpiler.transpiler',
                     'build', str(file_path)],
                 capture_output=True,
                 text=True,

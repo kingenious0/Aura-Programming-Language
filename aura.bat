@@ -1,2 +1,3 @@
 @echo off
-python "%~dp0transpiler\transpiler.py" %*
+set PYTHONPATH=%~dp0
+python -m transpiler.transpiler %*

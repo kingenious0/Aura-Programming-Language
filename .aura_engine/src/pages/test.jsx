@@ -13,6 +13,7 @@ export default function Test() {
     const el_6_ref = useRef(null);
     const el_7_ref = useRef(null);
     const el_8_ref = useRef(null);
+    const el_9_ref = useRef(null);
 
 
     return (
@@ -27,15 +28,16 @@ export default function Test() {
         alert('I sell waakye and beans');
     }}>About Me</button>
         <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-6 drop-shadow-sm" ref={el_5_ref}>About Me</h1>
-        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_6_ref} onClick={() => {
+        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6 max-w-2xl" ref={el_6_ref}>Create a paragraph with the text</p>
+        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_7_ref} onClick={() => {
         alert('I sell waakye and beans');
     }}>Contact Me</button>
-        <input className="w-full max-w-md px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all shadow-sm" ref={el_7_ref} placeholder="Your Name" />
-        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_8_ref} onClick={async () => {
+        <input className="w-full max-w-md px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all shadow-sm" ref={el_8_ref} placeholder="Your Name" />
+        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_9_ref} onClick={async () => {
         await new Promise(resolve => setTimeout(resolve, 2 * 1000));
         alert('processing...');
         alert('Form submitted successfully!');
-        el_8_ref.current.value = '';
+        el_9_ref.current.value = '';
         window.location.reload();
     }}>Submit</button>
             </div>

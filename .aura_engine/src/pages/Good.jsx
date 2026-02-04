@@ -7,6 +7,8 @@ export default function Good() {
 
     const el_1_ref = useRef(null);
     const el_2_ref = useRef(null);
+    const el_3_ref = useRef(null);
+    const el_4_ref = useRef(null);
 
 
     return (
@@ -19,6 +21,12 @@ export default function Good() {
         <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_2_ref} onClick={() => {
         window.open('https://x.com', '_blank');
     }}>Go back home</button>
+        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_3_ref} onClick={() => {
+        alert('I am good, thank you!');
+    }}>how are you</button>
+        <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-200" ref={el_4_ref} onClick={() => {
+        alert('Hello World');
+    }}>show alert</button>
             </div>
         </div>
     );

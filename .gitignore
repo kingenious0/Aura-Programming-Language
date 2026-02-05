@@ -47,3 +47,11 @@ test_output.html
 # Temporary files
 *.tmp
 .gemini/
+
+# Aura Brain - AI Model Files (too large for GitHub)
+.aura_brain/
+*.gguf
+
+# Aura Build Output
+.aura_engine/
+node_modules/

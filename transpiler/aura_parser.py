@@ -385,15 +385,17 @@ class AuraParser:
                                 self.brain = AuraBrain()
 
                         corrected = self.brain.fix_syntax(line)
-                    except:
-                        pass
+                    except Exception as e:
+                        print(f"[DEBUG] Brain Import/Execution Error: {e}")
+                        import traceback
+                        traceback.print_exc()
 
                     if corrected and corrected != line:
                         # Verify the correction is valid
                         retry_cmd = self._parse_line(corrected, line_num)
                         if retry_cmd:
                             print(
-                                f"  ✨ [Aura Brain] Auto-corrected: '{line}' -> '{corrected}'")
+                                f"  [Aura Brain] Auto-corrected: '{line}' -> '{corrected}'")
                             commands.append(retry_cmd)
                             modified_lines.append(corrected)  # Save the fix
                             corrections_made = True
@@ -409,9 +411,9 @@ class AuraParser:
                 try:
                     with open(filepath, 'w', encoding='utf-8') as f:
                         f.write('\n'.join(modified_lines) + '\n')
-                    print(f"  📝 [Source Update] Applied fixes to {filepath}")
+                    print(f"  [Source Update] Applied fixes to {filepath}")
                 except Exception as e:
-                    print(f"  ⚠️ [Error] Could not update source file: {e}")
+                    print(f"  [Error] Could not update source file: {e}")
 
         except FileNotFoundError:
             raise FileNotFoundError(f"Aura file not found: {filepath}")

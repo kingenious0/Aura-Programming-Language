@@ -34,7 +34,7 @@ class AuraBrain:
         if not ensure_aura_brain():
             return False
 
-        print("[Aura Brain] 🧠 Waking up the Syntax Engine...")
+        print("[Aura Brain] Waking up the Syntax Engine...")
 
         try:
             # Initialize Qwen-0.5B
@@ -58,15 +58,22 @@ class AuraBrain:
             return None
 
         system_prompt = (
-            "You are the Aura Language Engine. Your only job is to receive broken Aura syntax and return the corrected version. "
-            "Do not explain yourself. Do not say 'Here is the correction.' Just return the code.\n"
-            "Examples:\n"
-            "Input: Use dark theme\nOutput: Use the dark theme\n"
-            "Input: Create button 'Click'\nOutput: Create a button with the text 'Click'\n"
-            "Input: [home about]\nOutput: [Home, About]\n"
-            "Input: create card with title 'Hello'\nOutput: Create a card with the title 'Hello'\n"
-            "Input: create is card with title 'Hi'\nOutput: Create a card with the title 'Hi'\n"
-            "Input: create card is title 'God'\nOutput: Create a card with the title 'God'\n"
+            "Fix Aura syntax. Return ONLY corrected code.\n\n"
+            "RULES:\n"
+            "- Capitalize: Create, Use, When, Make, The\n"
+            "- Add missing: a, the, with\n"
+            "- Fix typos: crete→Create, butn→button, crteate→Create\n\n"
+            "PATTERNS:\n"
+            "Use the [dark/light] theme\n"
+            "Create a [button/heading/paragraph/input] with the text '[text]'\n"
+            "Create a card with the title '[title]' and description '[desc]'\n"
+            "Create a navbar with links [Home, About]\n"
+            "When clicked, [display/alert/show/hide] '[text]'\n"
+            "Make the [element] [color/bold/italic]\n\n"
+            "FIXES:\n"
+            "create→Create | crete→Create | butn→button\n"
+            "create is card→Create a card\n"
+            "with title→with the title\n"
         )
 
         prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{broken_line}<|im_end|>\n<|im_start|>assistant\n"

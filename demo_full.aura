@@ -11,10 +11,10 @@ The app's title is 'Aura Demo'
 
 # Headings
 Create a heading with the text 'Welcome to Aura Programming Language'
-
+Create a button with the text 'going here' | button→Create a button
 # Paragraphs
 Create a paragraph with the text 'Build beautiful web applications using natural English commands!'
-
+Create a card with the title 'GOING HERE' and description 'THIS IS A TEST'
 # Buttons with Actions
 Create a button with the text 'Say Hello'
 When clicked, display 'Hello from Aura!'
@@ -65,4 +65,11 @@ create a button with the text 'testing ai features'
 when clicked, display 'testing ai features'
 Create a card with the title 'going to school today' and description 'going to school today'
 Create a card with the title 'i am here' and the description 'i am here'.
-create card is title 'God is here' and description 'God is here'
+Create a card with the title 'God' and the description 'God is here'
+Create a card with the title 'this is a test' and the description 'this is a test'
+Create a card with the title 'is'
+Create a card with the title 'i am dancing' and the description 'i am dancing'.
+Create a card with the title 'show dancing card'
+Create a button with the text 'show dancing card'
+Create a button with the text 'click'
+Create a button with the text 'Going to school'

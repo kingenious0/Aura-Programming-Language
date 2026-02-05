@@ -61,6 +61,19 @@
         "command": "aura.watch",
         "title": "Aura: Start Watch Mode",
         "category": "Aura"
+      },
+      {
+        "command": "aura.correctLine",
+        "title": "Aura: Correct Current Line",
+        "category": "Aura"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "aura.correctLine",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f",
+        "when": "editorTextFocus && editorLangId == 'aura'"
       }
     ]
   },

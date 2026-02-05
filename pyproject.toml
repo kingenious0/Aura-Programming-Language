@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aura-lang"
+version = "1.0.0"
+description = "Natural language programming - write code in plain English"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = ["programming-language", "natural-language", "transpiler", "ai", "web-development"]
+authors = [
+    {name = "KingEnious", email = ""}
+]
+maintainers = [
+    {name = "KingEnious", email = ""}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Code Generators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "llama-cpp-python>=0.2.0",
+    "watchdog>=6.0.0",
+    "requests>=2.28.0",
+    "huggingface_hub>=0.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=22.0",
+    "flake8>=5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/kingenious0/Aura-Programming-Language"
+Documentation = "https://github.com/kingenious0/Aura-Programming-Language#readme"
+Repository = "https://github.com/kingenious0/Aura-Programming-Language"
+Issues = "https://github.com/kingenious0/Aura-Programming-Language/issues"
+
+[project.scripts]
+aura = "transpiler.cli:main"
+
+[tool.setuptools]
+packages = ["transpiler"]
+
+[tool.setuptools.package-data]
+transpiler = ["*.py"]

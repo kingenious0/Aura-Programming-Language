@@ -1,0 +1,31 @@
+# Include important files
+include README.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+
+# Include documentation
+recursive-include docs *.md
+
+# Exclude large files and build artifacts
+exclude .aura_brain/*
+exclude .aura_engine/*
+exclude *.gguf
+exclude node_modules/*
+exclude dist/*
+exclude build/*
+exclude *.egg-info/*
+
+# Exclude test files
+exclude test*.py
+exclude *.aura
+
+# Exclude development files
+exclude .git/*
+exclude .gitignore
+exclude *.bat
+exclude watch.py
+exclude setup-global.ps1
+
+# Include transpiler package
+recursive-include transpiler *.py

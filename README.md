@@ -59,27 +59,33 @@ crete a butn with text 'Submit'  →  Create a button with the text 'Submit'
 
 ## 📦 Installation
 
-### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- Git
+### Quick Install (Recommended)
 
-### Quick Install
+```bash
+# Install from PyPI
+pip install aura-lang
+
+# Verify installation
+aura --version
+```
+
+That's it! You're ready to create your first Aura project.
+
+### Install from Source
 
 ```bash
 # Clone the repository
 git clone https://github.com/kingenious0/Aura-Programming-Language.git
 cd Aura-Programming-Language
 
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Add aura to PATH (Windows)
-set PATH=%PATH%;%CD%
-
-# Or add to PATH (Linux/Mac)
-export PATH=$PATH:$(pwd)
+# Install in editable mode
+pip install -e .
 ```
+
+### Prerequisites
+- Python 3.8+
+- Node.js 16+ (auto-installed during `aura init`)
+
 
 ---
 

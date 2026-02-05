@@ -303,7 +303,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 <div align="center">
 
-**Built with ❤️ by [KingEnious](https://github.com/kingenious0)**
+**Built with ❤️ by [Kingenious](https://github.com/kingenious0)**
 
 [⭐ Star this repo](https://github.com/kingenious0/Aura-Programming-Language) • [🐛 Report Bug](https://github.com/kingenious0/Aura-Programming-Language/issues) • [💡 Request Feature](https://github.com/kingenious0/Aura-Programming-Language/issues)
 

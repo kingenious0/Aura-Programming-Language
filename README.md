@@ -74,41 +74,90 @@ cd Aura-Programming-Language
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Download the AI model (one-time setup)
-python -m transpiler.setup
+# Add aura to PATH (Windows)
+set PATH=%PATH%;%CD%
 
-# You're ready! 🎉
+# Or add to PATH (Linux/Mac)
+export PATH=$PATH:$(pwd)
 ```
 
 ---
 
 ## 🎯 Quick Start
 
-### 1. Create your first Aura file
-
-Create `hello.aura`:
-```aura
-Use the dark theme
-
-Create a heading with the text 'Hello, Aura!'
-Create a paragraph with the text 'This is my first app'
-Create a button with the text 'Say Hi'
-When clicked, display 'Hi from Aura!'
-```
-
-### 2. Run it
+### 1. Create a New Project
 
 ```bash
-# Build and launch
-aura hello.aura
+# Create project folder
+mkdir my-app
+cd my-app
 
-# Or use watch mode for live reload
-python watch.py .
+# Initialize Aura project (creates structure, downloads AI, sets up React/Vite)
+aura init
 ```
 
-### 3. Open your browser
+**Output:**
+```
+============================================================
+  🚀 AURA PROJECT INITIALIZER
+============================================================
+  Creating professional structure...
+  ✓ Created pages/, assets/, components/
+  ✓ Generated sample files
+  ✓ Aura Brain ready
+  ✓ React/Vite engine initialized
+============================================================
+  ✅ PROJECT INITIALIZED SUCCESSFULLY!
+============================================================
+```
 
-Navigate to `http://localhost:5173` and see your app running! 🚀
+### 2. Start Developing
+
+```bash
+# Start hot-reload dev server
+aura dev
+```
+
+Your app is now running at `http://localhost:5173`! 🚀
+
+### 3. Add Pages
+
+```bash
+# Create a new page (while dev server is running)
+cd pages
+echo "Create a heading with the text 'Products'" > Products.aura
+```
+
+**Boom!** Page is instantly live at `/products` (no restart needed!)
+
+---
+
+## ⚡ The Aura Advantage
+
+### **React/Vite Way** (30+ minutes)
+
+```bash
+npm create vite@latest my-app
+cd my-app
+npm install
+npm install react-router-dom tailwindcss
+# Configure Tailwind...
+# Create folder structure...
+# Write boilerplate...
+# Configure routing...
+npm run dev
+```
+
+### **Aura Way** (2 minutes)
+
+```bash
+mkdir my-app
+cd my-app
+aura init
+aura dev
+```
+
+**10x faster setup. 100x simpler code.** ✨
 
 ---
 

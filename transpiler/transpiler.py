@@ -309,15 +309,32 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: aura [run|build|dev] <filename.aura>")
+        print("Usage: aura [init|run|build|dev] <filename.aura>")
+        print("\nCommands:")
+        print("  init  - Initialize a new Aura project with professional structure")
+        print("  dev   - Start hot-reload dev server (watches all .aura files)")
         print("  run   - Build and launch dev server for a single file")
         print("  build - Build project without launching server")
-        print("  dev   - Start hot-reload dev server (watches all .aura files)")
+        print("\nExamples:")
+        print("  aura init              # Create new project")
+        print("  aura dev               # Start development server")
+        print("  aura run Home.aura     # Run a single file")
         sys.exit(1)
 
     command = sys.argv[1]
 
-    if command == "dev":
+    if command == "init":
+        # Initialize a new Aura project
+        try:
+            from .init_project import AuraProjectInitializer
+        except ImportError:
+            from init_project import AuraProjectInitializer
+
+        project_name = sys.argv[2] if len(sys.argv) > 2 else None
+        initializer = AuraProjectInitializer(project_name)
+        initializer.init()
+
+    elif command == "dev":
         # Start the professional dev server
         try:
             from .dev_server import AuraDevServer
@@ -325,8 +342,20 @@ def main():
             from dev_server import AuraDevServer
 
         from pathlib import Path
-        dev_server = AuraDevServer(Path.cwd())
+
+        # Check if we're in a project with pages/ folder
+        project_dir = Path.cwd()
+        pages_dir = project_dir / 'pages'
+
+        if pages_dir.exists():
+            # Watch the pages/ folder
+            dev_server = AuraDevServer(pages_dir)
+        else:
+            # Watch current directory (legacy mode)
+            dev_server = AuraDevServer(project_dir)
+
         dev_server.start()
+
     else:
         transpiler = AuraTranspiler()
 
@@ -338,6 +367,7 @@ def main():
             transpiler.run(command)
         else:
             print(f"Unknown command: {command}")
+            print("Run 'aura' without arguments to see usage")
 
 
 if __name__ == "__main__":

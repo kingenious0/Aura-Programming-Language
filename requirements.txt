@@ -1,0 +1,10 @@
+# Aura Programming Language - Dependencies
+
+# Core transpiler
+llama-cpp-python>=0.2.0
+
+# Development server
+watchdog>=6.0.0
+
+# Optional: For better performance
+# numpy>=1.24.0

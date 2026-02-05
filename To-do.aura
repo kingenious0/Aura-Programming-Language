@@ -1,0 +1,7 @@
+Create a heading with the text 'My Tasks'
+Create an input with the text 'Enter task'
+Create a button with the text 'Add Task'
+
+Create a card with the title 'Task 1' and description 'Complete project'
+Create a button with the text 'Done'
+When clicked, hide the card

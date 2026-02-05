@@ -309,20 +309,35 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: aura [run|build] <filename.aura>")
+        print("Usage: aura [run|build|dev] <filename.aura>")
+        print("  run   - Build and launch dev server for a single file")
+        print("  build - Build project without launching server")
+        print("  dev   - Start hot-reload dev server (watches all .aura files)")
         sys.exit(1)
 
     command = sys.argv[1]
-    transpiler = AuraTranspiler()
 
-    if command == "run" and len(sys.argv) > 2:
-        transpiler.run(sys.argv[2])
-    elif command == "build" and len(sys.argv) > 2:
-        transpiler.build(sys.argv[2])
-    elif command.endswith('.aura'):
-        transpiler.run(command)
+    if command == "dev":
+        # Start the professional dev server
+        try:
+            from .dev_server import AuraDevServer
+        except ImportError:
+            from dev_server import AuraDevServer
+
+        from pathlib import Path
+        dev_server = AuraDevServer(Path.cwd())
+        dev_server.start()
     else:
-        print(f"Unknown command: {command}")
+        transpiler = AuraTranspiler()
+
+        if command == "run" and len(sys.argv) > 2:
+            transpiler.run(sys.argv[2])
+        elif command == "build" and len(sys.argv) > 2:
+            transpiler.build(sys.argv[2])
+        elif command.endswith('.aura'):
+            transpiler.run(command)
+        else:
+            print(f"Unknown command: {command}")
 
 
 if __name__ == "__main__":

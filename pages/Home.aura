@@ -1,0 +1,13 @@
+# Welcome to Aura!
+# This is your home page. Edit it to customize your app.
+
+Use the dark theme
+
+Create a heading with the text 'Welcome to AuraProgrammingLanguage'
+Create a paragraph with the text 'Build beautiful web apps using plain English!'
+
+Create a button with the text 'Get Started'
+When clicked, display 'Hello from Aura!'
+
+# Try creating more pages in the pages/ folder!
+# Each .aura file becomes a route automatically.

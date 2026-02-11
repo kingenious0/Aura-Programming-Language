@@ -125,14 +125,51 @@ def main():
 
     # Handle build command
     if command == 'build':
-        if len(sys.argv) < 3:
-            print("❌ Error: 'build' command requires a file argument")
+        # Case 1: Build specific file
+        if len(sys.argv) >= 3:
+            from transpiler.transpiler import AuraTranspiler
+            transpiler = AuraTranspiler()
+            transpiler.build(sys.argv[2])
+            sys.exit(0)
+
+        # Case 2: Build project (auto-detect)
+        project_dir = Path.cwd()
+        pages_dir = project_dir / 'pages'
+
+        # Also check current directory for legacy projects
+        aura_files = []
+        if pages_dir.exists():
+            aura_files = list(pages_dir.glob('*.aura'))
+        else:
+            aura_files = list(project_dir.glob('*.aura'))
+
+        if not aura_files:
+            print("❌ No .aura files found in pages/ or current directory")
             print("Usage: aura build <filename.aura>")
             sys.exit(1)
 
+        print(f"📦 Building project: {project_dir.name}")
+
+        # Check if engine exists, if not initialize it
+        engine_dir = project_dir / '.aura_engine'
+        if not engine_dir.exists():
+            print("⚠️ Engine not found. Initializing...")
+            try:
+                from .init_project import AuraProjectInitializer
+            except ImportError:
+                from init_project import AuraProjectInitializer
+
+            initializer = AuraProjectInitializer(project_dir.name)
+            initializer._init_engine()
+
         from transpiler.transpiler import AuraTranspiler
         transpiler = AuraTranspiler()
-        transpiler.build(sys.argv[2])
+
+        # Building any file triggers the project scanner
+        # But let's be explicit and ensure the first file triggers the process
+        print(f"  Found {len(aura_files)} pages. Starting build...")
+        transpiler.build(str(aura_files[0]))
+        print("✓ Project build complete")
         sys.exit(0)
 
     # Handle direct .aura file (legacy support)

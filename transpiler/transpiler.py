@@ -1,10 +1,11 @@
-
 import os
 import sys
 import json
 import subprocess
 import glob
 from pathlib import Path
+from tqdm import tqdm
+
 try:
     from .aura_parser import AuraParser
     from .html_generator import HTMLGenerator
@@ -21,7 +22,7 @@ class AuraTranspiler:
 
     def build(self, input_file: str):
         """Builds the entire project (Multi-page support + Global Navbar)"""
-        print(f"[Aura] Project Build v4.0")
+        # print(f"[Aura] Project Build v4.0")
 
         if not os.path.exists(input_file):
             print(f"[Error] File not found: {input_file}")
@@ -31,33 +32,36 @@ class AuraTranspiler:
         input_dir = os.path.dirname(os.path.abspath(input_file))
         aura_files = glob.glob(os.path.join(input_dir, "*.aura"))
 
-        print(
-            f"[Scan] Found {len(aura_files)} pages: {[Path(f).stem for f in aura_files]}")
+        # print(
+        #     f"[Scan] Found {len(aura_files)} pages: {[Path(f).stem for f in aura_files]}")
 
         pages = {}
         global_navbar = None  # { 'links': 'Home, About', 'logo': '...' }
 
         try:
-            for file_path in aura_files:
-                name = Path(file_path).stem
-                clean_name = name.replace(' ', '').replace(
-                    '_', '').replace('-', '')
-                comp_name = clean_name[0].upper(
-                ) + clean_name[1:] if clean_name else "Page"
-                if not comp_name[0].isalpha():
-                    comp_name = "Page" + comp_name
+            with tqdm(total=len(aura_files), desc="🚀 Building Project", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} pages") as pbar:
+                for file_path in aura_files:
+                    name = Path(file_path).stem
+                    clean_name = name.replace(' ', '').replace(
+                        '_', '').replace('-', '')
+                    comp_name = clean_name[0].upper(
+                    ) + clean_name[1:] if clean_name else "Page"
+                    if not comp_name[0].isalpha():
+                        comp_name = "Page" + comp_name
 
-                print(f"  - Compiling {name} -> {comp_name}...")
-                commands = self.parser.parse_file(file_path)
+                    pbar.set_description(f"🚀 Building {name}")
+                    # print(f"  - Compiling {name} -> {comp_name}...")
+                    commands = self.parser.parse_file(file_path)
 
-                # Check for Global Navbar Definition
-                for cmd in commands:
-                    if cmd.command_type == 'ui_navbar':
-                        global_navbar = cmd.data
+                    # Check for Global Navbar Definition
+                    for cmd in commands:
+                        if cmd.command_type == 'ui_navbar':
+                            global_navbar = cmd.data
 
-                generator = HTMLGenerator(component_name=comp_name)
-                jsx = generator.generate(commands)
-                pages[name] = {'comp': comp_name, 'code': jsx}
+                    generator = HTMLGenerator(component_name=comp_name)
+                    jsx = generator.generate(commands)
+                    pages[name] = {'comp': comp_name, 'code': jsx}
+                    pbar.update(1)
 
         except Exception as e:
             print(f"[Error] Compilation Failed: {e}")
@@ -75,7 +79,7 @@ class AuraTranspiler:
         # Generate Router and Navbar
         self._generate_router(pages, home_page_name, global_navbar)
 
-        print("[Build] Project Updated.")
+        # print("[Build] Project Updated.")
         return True
 
     def run(self, input_file: str):

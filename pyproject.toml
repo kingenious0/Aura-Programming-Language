@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aura-lang"
+name = "aura-prog-lang"
 version = "1.0.0"
 description = "Natural language programming - write code in plain English"
 readme = "README.md"
@@ -11,10 +11,10 @@ requires-python = ">=3.8"
 license = {text = "MIT"}
 keywords = ["programming-language", "natural-language", "transpiler", "ai", "web-development"]
 authors = [
-    {name = "KingEnious", email = ""}
+    {name = "Elliot Paakow Entsiwah (Kingenious)", email = "kingenious@example.com"}
 ]
 maintainers = [
-    {name = "KingEnious", email = ""}
+    {name = "Elliot Paakow Entsiwah (Kingenious)", email = "kingenious@example.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -36,6 +36,7 @@ dependencies = [
     "watchdog>=6.0.0",
     "requests>=2.28.0",
     "huggingface_hub>=0.16.0",
+    "tqdm>=4.66.0",
 ]
 
 [project.optional-dependencies]
@@ -54,8 +55,9 @@ Issues = "https://github.com/kingenious0/Aura-Programming-Language/issues"
 [project.scripts]
 aura = "transpiler.cli:main"
 
-[tool.setuptools]
-packages = ["transpiler"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["transpiler*"]
 
 [tool.setuptools.package-data]
 transpiler = ["*.py"]

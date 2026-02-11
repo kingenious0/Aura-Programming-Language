@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: aura-prog-lang
+Version: 1.0.0
+Summary: Natural language programming - write code in plain English
+Home-page: https://github.com/kingenious0/Aura-Programming-Language
+Author: KingEnious
+Author-email: "Elliot Paakow Entsiwah (Kingenious)" <kingenious@example.com>
+Maintainer-email: "Elliot Paakow Entsiwah (Kingenious)" <kingenious@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/kingenious0/Aura-Programming-Language
+Project-URL: Documentation, https://github.com/kingenious0/Aura-Programming-Language#readme
+Project-URL: Repository, https://github.com/kingenious0/Aura-Programming-Language
+Project-URL: Issues, https://github.com/kingenious0/Aura-Programming-Language/issues
+Keywords: programming-language,natural-language,transpiler,ai,web-development
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Compilers
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: llama-cpp-python>=0.2.0
+Requires-Dist: watchdog>=6.0.0
+Requires-Dist: requests>=2.28.0
+Requires-Dist: huggingface_hub>=0.16.0
+Requires-Dist: tqdm>=4.66.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: black>=22.0; extra == "dev"
+Requires-Dist: flake8>=5.0; extra == "dev"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# AuraProgrammingLanguage
+
+An Aura project - build web apps using natural English!
+
+## Getting Started
+
+```bash
+# Start the development server
+aura dev
+
+# Open http://localhost:5173 in your browser
+```
+
+## Project Structure
+
+- `pages/` - Your .aura files (each file = one page)
+- `assets/` - Images, fonts, and other static files
+- `.aura_engine/` - Auto-managed React/Vite (don't edit)
+
+## Adding Pages
+
+Just create a new `.aura` file in the `pages/` folder:
+
+```bash
+echo "Create a heading with the text 'Products'" > pages/Products.aura
+```
+
+The page is instantly available at `/products`!
+
+## Learn More
+
+- [Aura Documentation](https://github.com/kingenious0/Aura-Programming-Language)
+- [Command Reference](../COMMAND_REFERENCE.md)

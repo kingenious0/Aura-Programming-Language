@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Generated Page</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #eee;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 5px;
+            width: calc(100% - 10px);
+            transition: all 0.3s ease;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        h1, h2, h3 {
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card h3 {
+            margin-top: 0;
+        }
+        
+        .card p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .center {
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="aura_elem_0">Welcome to Aura Programming Language</h1>
+        <p id="aura_elem_1">Build beautiful web applications using natural English commands!</p>
+        <button id="aura_elem_2">Say Hello</button>
+        <button id="aura_elem_3">Show Alert</button>
+        <button id="aura_elem_4">Refresh Page</button>
+        <input id="aura_elem_5" type="text" placeholder="Enter your name">
+        <input id="aura_elem_6" type="text" placeholder="Enter your email">
+        <div class="card" id="aura_elem_7">
+                <h3>Feature 1</h3>
+                <p>Aura uses natural language syntax</p>
+            </div>
+        <div class="card" id="aura_elem_8">
+                <h3>Feature 2</h3>
+                <p>Professional HTML output with modern design</p>
+            </div>
+        <div class="card" id="aura_elem_9">
+                <h3>Feature 3</h3>
+                <p>Multiple themes: dark, light, and default</p>
+            </div>
+        <img id="aura_elem_10" src="https://via.placeholder.com/600x300" alt="Image">
+        <img id="aura_elem_11" src="https://via.placeholder.com/400x200" alt="Demo Image">
+        <button id="aura_elem_12">Submit Form</button>
+        <h1 id="aura_elem_13">Contact Us</h1>
+        <p id="aura_elem_14">Fill out the form below to get in touch</p>
+        <input id="aura_elem_15" type="text" placeholder="Your message">
+        <button id="aura_elem_16">Send Message</button>
+    </div>
+    
+    <script>
+        const user_name = 'John Doe';
+        const app_title = 'Aura Demo';
+        
+        document.getElementById('aura_elem_2').addEventListener('click', function() {
+            alert('Hello from Aura!');
+        });
+        
+        
+        document.getElementById('aura_elem_3').addEventListener('click', function() {
+            alert('This is an alert message!');
+        });
+        
+        
+        document.getElementById('aura_elem_4').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        
+        document.getElementById('aura_elem_12').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        
+        document.getElementById('aura_elem_16').addEventListener('click', function() {
+            alert('Message sent! Thank you for contacting us.');
+        });
+        
+    </script>
+    
+    <!-- Generated by Aura Transpiler v1.0 on 2026-02-03 14:52:37 -->
+</body>
+</html>

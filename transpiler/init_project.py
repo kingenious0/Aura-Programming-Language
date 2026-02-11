@@ -6,12 +6,19 @@ Creates a professional project structure with one command
 import os
 import sys
 import subprocess
+import time
+import requests
+import zipfile
+import io
 from pathlib import Path
-import shutil
+from tqdm import tqdm
 
 
 class AuraProjectInitializer:
     """Initializes a new Aura project with professional structure"""
+
+    # URL for the pre-built engine (You must create this release on GitHub!)
+    ENGINE_ZIP_URL = "https://github.com/kingenious0/Aura-Programming-Language/releases/download/v1.0.0/aura_engine_v1.zip"
 
     def __init__(self, project_name: str = None):
         self.project_name = project_name or Path.cwd().name
@@ -26,20 +33,19 @@ class AuraProjectInitializer:
         print(f"  Location: {self.project_dir}")
         print("="*60 + "\n")
 
-        # Step 1: Create folder structure
-        self._create_folders()
+        steps = [
+            ("Creating structure", self._create_folders),
+            ("Creating samples", self._create_sample_files),
+            ("Setting up Brain", self._setup_brain),
+            ("Initializing Engine", self._init_engine),
+            ("Creating config", self._create_config)
+        ]
 
-        # Step 2: Create sample files
-        self._create_sample_files()
-
-        # Step 3: Setup Aura Brain
-        self._setup_brain()
-
-        # Step 4: Initialize React/Vite engine
-        self._init_engine()
-
-        # Step 5: Create config files
-        self._create_config()
+        with tqdm(total=len(steps), desc="🚀 Setting up Aura", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} steps") as pbar:
+            for desc, step_func in steps:
+                pbar.set_description(f"🚀 {desc}")
+                step_func(pbar)
+                pbar.update(1)
 
         print("\n" + "="*60)
         print("  ✅ PROJECT INITIALIZED SUCCESSFULLY!")
@@ -56,28 +62,23 @@ class AuraProjectInitializer:
         print("\n💡 Tip: Run 'aura dev' to start hot-reload development!")
         print("="*60 + "\n")
 
-    def _create_folders(self):
+    def _create_folders(self, pbar):
         """Create the project folder structure"""
-        print("[1/5] Creating project structure...")
-
         folders = [
-            'pages',           # User's .aura files
-            'assets',          # Images, fonts, etc.
+            'pages',
+            'assets',
             'assets/images',
             'assets/fonts',
-            'components',      # Future: Reusable Aura components
+            'components',
         ]
 
         for folder in folders:
             folder_path = self.project_dir / folder
             folder_path.mkdir(parents=True, exist_ok=True)
-            print(f"  ✓ Created {folder}/")
+            # tqdm.write(f"  ✓ Created {folder}/")
 
-        print()
-
-    def _create_sample_files(self):
+    def _create_sample_files(self, pbar):
         """Create sample .aura files to get started"""
-        print("[2/5] Creating sample files...")
 
         # Home page
         home_content = """# Welcome to Aura!
@@ -97,7 +98,6 @@ When clicked, display 'Hello from Aura!'
 
         home_path = self.project_dir / 'pages' / 'Home.aura'
         home_path.write_text(home_content, encoding='utf-8')
-        print(f"  ✓ Created pages/Home.aura")
 
         # About page
         about_content = """# About Page
@@ -107,10 +107,8 @@ Create a paragraph with the text 'This app was built with Aura - the natural lan
 
 Create a card with the title 'Why Aura?' and description 'Write code in plain English. No syntax to memorize!'
 """
-
         about_path = self.project_dir / 'pages' / 'About.aura'
         about_path.write_text(about_content, encoding='utf-8')
-        print(f"  ✓ Created pages/About.aura")
 
         # README
         readme_content = f"""# {self.project_name}
@@ -147,10 +145,8 @@ The page is instantly available at `/products`!
 - [Aura Documentation](https://github.com/kingenious0/Aura-Programming-Language)
 - [Command Reference](../COMMAND_REFERENCE.md)
 """
-
         readme_path = self.project_dir / 'README.md'
         readme_path.write_text(readme_content, encoding='utf-8')
-        print(f"  ✓ Created README.md")
 
         # .gitignore
         gitignore_content = """# Aura
@@ -165,6 +161,7 @@ __pycache__/
 .Python
 venv/
 env/
+.venv/
 
 # OS
 .DS_Store
@@ -175,114 +172,135 @@ Thumbs.db
 .idea/
 *.swp
 """
-
         gitignore_path = self.project_dir / '.gitignore'
         gitignore_path.write_text(gitignore_content, encoding='utf-8')
-        print(f"  ✓ Created .gitignore")
 
-        print()
-
-    def _setup_brain(self):
+    def _setup_brain(self, pbar):
         """Setup the Aura Brain (download model if needed)"""
-        print("[3/5] Setting up Aura Brain...")
-
         try:
             # Import setup module
             sys.path.insert(0, str(Path(__file__).parent.parent))
             from transpiler.setup import ensure_aura_brain
 
+            # We assume ensure_aura_brain might print things, which interferes with tqdm.
+            # Ideally we'd wrap it or capture output. For now, let it run.
+            # If it downloads, it takes time.
             if ensure_aura_brain():
-                print("  ✓ Aura Brain ready")
+                pass
             else:
-                print("  ⚠️ Aura Brain setup incomplete (will download on first use)")
+                tqdm.write(
+                    "  ⚠️ Aura Brain setup incomplete (will download on first use)")
         except Exception as e:
-            print(f"  ⚠️ Could not setup Brain: {e}")
-            print("  Brain will be downloaded on first transpile")
+            tqdm.write(f"  ⚠️ Could not setup Brain: {e}")
+            tqdm.write("  Brain will be downloaded on first transpile")
 
-        print()
+    def _download_prebuilt_engine(self, engine_dir):
+        """Downloads and extracts the pre-built engine to avoid npm install"""
+        try:
+            # tqdm.write(f"   ⬇️ Downloading pre-built engine from GitHub...")
+            response = requests.get(
+                self.ENGINE_ZIP_URL, stream=True, timeout=30)
 
-    def _init_engine(self):
+            if response.status_code != 200:
+                tqdm.write(
+                    f"   ⚠️ Failed to download pre-built engine. Status: {response.status_code}")
+                return False
+
+            total_size = int(response.headers.get('content-length', 0))
+
+            # Download with progress
+            block_size = 1024  # 1 Kibibyte
+            buffer = io.BytesIO()
+
+            with tqdm(total=total_size, unit='iB', unit_scale=True, desc="   ⬇️ Downloading Engine", leave=False) as dl_pbar:
+                for data in response.iter_content(block_size):
+                    dl_pbar.update(len(data))
+                    buffer.write(data)
+
+            # Extract
+            tqdm.write("   📦 Extracting engine...")
+            with zipfile.ZipFile(buffer) as zip_ref:
+                # Zip should contain .aura_engine folder
+                zip_ref.extractall(self.project_dir)
+
+            # verify
+            if (engine_dir / 'node_modules').exists():
+                tqdm.write("   ✓ Engine installed (Skipped setup!)")
+                return True
+
+        except Exception as e:
+            tqdm.write(f"   ⚠️ Pre-build download failed: {e}")
+            tqdm.write("   ⚠️ Falling back to manual build...")
+
+        return False
+
+    def _init_engine(self, pbar=None):
         """Initialize the React/Vite engine"""
-        print("[4/5] Initializing React/Vite engine...")
-
         engine_dir = self.project_dir / '.aura_engine'
 
         if engine_dir.exists():
-            print("  ✓ Engine already exists")
-            print()
+            # basic check if package.json exists
+            if (engine_dir / 'package.json').exists():
+                return
+
+        # 1. Try "Fast Path" (Download pre-built)
+        if self._download_prebuilt_engine(engine_dir):
             return
 
-        print("  This may take a minute (one-time setup)...")
-
+        # 2. Slow Path (Manual Creation)
         try:
             # Create engine directory
             engine_dir.mkdir(exist_ok=True)
 
-            # Initialize Vite project
-            print("  → Creating Vite project...")
-            result = subprocess.run(
-                ['npm', 'create', 'vite@latest', '.', '--', '--template', 'react'],
-                cwd=str(engine_dir),
-                capture_output=True,
-                text=True,
-                timeout=120
-            )
+            # Windows requires shell=True for npm
+            use_shell = sys.platform == 'win32'
 
-            if result.returncode != 0:
-                print(f"  ⚠️ Vite init warning: {result.stderr}")
+            commands = [
+                (['npm', 'create', 'vite@latest', '.', '--',
+                 '--template', 'react'], "Creating Vite app"),
+                (['npm', 'install'], "Installing core dependencies"),
+                (['npm', 'install', 'react-router-dom'], "Installing Router"),
+                (['npm', 'install', '-D', 'tailwindcss', 'postcss',
+                 'autoprefixer'], "Installing Tailwind"),
+                (['npx', 'tailwindcss', 'init', '-p'], "Configuring Tailwind")
+            ]
 
-            # Install dependencies
-            print("  → Installing dependencies...")
-            subprocess.run(
-                ['npm', 'install'],
-                cwd=str(engine_dir),
-                capture_output=True,
-                timeout=300
-            )
+            # Nested progress bar for engine steps
+            # position=1 leaves the main bar at top
+            with tqdm(total=len(commands), desc="   ⚙️ Engine Setup", leave=False, bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt}") as sub_pbar:
+                for cmd, desc in commands:
+                    sub_pbar.set_description(f"   ⚙️ {desc}")
 
-            # Install React Router
-            print("  → Installing React Router...")
-            subprocess.run(
-                ['npm', 'install', 'react-router-dom'],
-                cwd=str(engine_dir),
-                capture_output=True,
-                timeout=120
-            )
+                    # Increased timeouts significantly
+                    timeout_val = 600 if 'install' in cmd else 120
 
-            # Install Tailwind CSS
-            print("  → Installing Tailwind CSS...")
-            subprocess.run(
-                ['npm', 'install', '-D', 'tailwindcss', 'postcss', 'autoprefixer'],
-                cwd=str(engine_dir),
-                capture_output=True,
-                timeout=120
-            )
+                    result = subprocess.run(
+                        cmd,
+                        cwd=str(engine_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout_val,
+                        shell=use_shell
+                    )
 
-            subprocess.run(
-                ['npx', 'tailwindcss', 'init', '-p'],
-                cwd=str(engine_dir),
-                capture_output=True,
-                timeout=60
-            )
+                    if result.returncode != 0:
+                        tqdm.write(
+                            f"  ⚠️ Warning during '{desc}': {result.stderr[:200]}...")
 
-            print("  ✓ React/Vite engine initialized")
+                    sub_pbar.update(1)
 
         except subprocess.TimeoutExpired:
-            print(
+            tqdm.write(
                 "  ⚠️ Setup timed out. You may need to run 'npm install' manually in .aura_engine/")
         except FileNotFoundError:
-            print("  ⚠️ npm not found. Please install Node.js and npm")
-            print("  Engine will be created on first build")
+            tqdm.write("  ⚠️ npm not found. Please install Node.js and npm")
+            tqdm.write("  Engine will be created on first build")
         except Exception as e:
-            print(f"  ⚠️ Engine setup error: {e}")
-            print("  Engine will be created on first build")
+            tqdm.write(f"  ⚠️ Engine setup error: {e}")
+            tqdm.write("  Engine will be created on first build")
 
-        print()
-
-    def _create_config(self):
+    def _create_config(self, pbar):
         """Create project configuration file"""
-        print("[5/5] Creating configuration...")
-
         config_content = """# Aura Project Configuration
 
 PROJECT_NAME = "{project_name}"
@@ -310,9 +328,6 @@ BRAIN_TEMPERATURE = 0.1
 
         config_path = self.project_dir / 'aura.config.py'
         config_path.write_text(config_content, encoding='utf-8')
-        print(f"  ✓ Created aura.config.py")
-
-        print()
 
 
 def main():

@@ -17,12 +17,14 @@
 
 ## 🌈 Why Aura?
 
-Coding should be as natural as writing an email. Aura is a transpiler engine that understands English commands and converts them into production-ready React, Vite, and Tailwind CSS web applications.
+Aura is not just a framework—it's a **human interface to computation**. Write logic, build UIs, and create full applications using nothing but plain English.
 
-- **🗣️ Natural English Syntax**: No more brackets or semicolons. Just tell Aura what you want.
-- **🧠 Brain-Powered**: Integrated semantic engine (Qwen-0.5B) for silent syntax correction and intelligent parsing.
-- **⚡ Hot Reload**: Instant updates as you save your `.aura` files.
-- **🎨 Premium Aesthetics**: Built-in themes with glassmorphism, smooth animations, and modern gradients.
+- **🗣️ Natural English Syntax**: No brackets, no semicolons. Just English.
+- **🧠 Dual-Mode Engine**: 
+  - **Core Logic**: Pure Python execution (variables, loops, functions)
+  - **UI Mode**: React/Vite web applications with premium design
+- **⚡ Brain-Powered**: Integrated AI (Qwen-0.5B) for intelligent syntax correction.
+- **🎨 Production-Ready**: Generates optimized, deployable code.
 
 ---
 
@@ -40,24 +42,82 @@ cd Aura-Programming-Language
 pip install -e .
 ```
 
-### 2. Initialize a Project
-```bash
-aura init my-new-app
-cd my-new-app
+### 2. Choose Your Mode
+
+#### 🧠 **Core Logic Mode** (Pure Python)
+Create a file `logic.aura`:
+```aura
+set score to 10
+
+if score > 5
+    print "You win!"
+else
+    print "Try again"
+
+repeat 3 times
+    print "Aura is awesome!"
 ```
 
-### 3. Start Developing
+Run it:
+```bash
+aura run logic.aura        # Execute
+aura trace logic.aura      # Debug with output
+aura compile logic.aura    # Generate Python file
+```
+
+#### 🌐 **UI Mode** (React/Vite)
+Initialize a project:
+```bash
+aura init my-app
+cd my-app
+```
+
+Create a page `pages/Home.aura`:
+```aura
+Use the dark theme
+
+Create a heading with the text 'Welcome to the Future'
+Create a paragraph with the text 'This page was built using plain English.'
+
+Create a button with the text 'Click Me'
+When clicked, display 'Hello from Aura! 🎉'
+```
+
+Start developing:
 ```bash
 aura dev
 ```
-Open [http://localhost:5137](http://localhost:5137) to see your app live!
+Open [http://localhost:5173](http://localhost:5173) to see your app live!
 
 ---
 
-## 📝 The Aura Syntax
+## 📝 The Aura Language
 
-Writing Aura is like describing your UI to a friend.
+### Core Logic (Phase 2 - NEW!)
+```aura
+# Variables
+set score to 10
+set name to "Aura"
 
+# Math
+set total to score * 2
+
+# Conditionals
+if total > 15
+    print "High score!"
+
+# Loops
+repeat 5 times
+    print "Hello"
+
+# Functions
+define function greet
+    print "Welcome to Aura"
+
+call function greet
+```
+
+### UI Development (Phase 1)
 ```aura
 Use the dark theme
 

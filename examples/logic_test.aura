@@ -1,0 +1,32 @@
+# Aura Core Logic Test
+# Phase 2 - Pure Logic Execution
+
+# Variables
+set score to 10
+set multiplier to 2
+
+# Math
+set total to score * multiplier
+
+# Print
+print "Score is:"
+print score
+print "Total is:"
+print total
+
+# Conditionals
+if score > 5
+    print "Win!"
+else
+    print "Lose"
+
+# Loops
+repeat 3 times
+    print "Hello from Aura!"
+
+# Functions
+define function greet
+    print "Welcome to Aura Core"
+    print "The Brain is alive"
+
+call function greet

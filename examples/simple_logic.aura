@@ -1,0 +1,12 @@
+# Simple Aura Core Example
+# Variables, conditions, and loops
+
+set score to 10
+
+if score > 5
+    print "You win!"
+else
+    print "Try again"
+
+repeat 3 times
+    print "Aura is awesome!"

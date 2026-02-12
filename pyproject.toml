@@ -57,7 +57,7 @@ aura = "transpiler.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["transpiler*"]
+include = ["transpiler*", "runtime*", "visual*", "inspector*", "ui*"]
 
 [tool.setuptools.package-data]
 transpiler = ["*.py"]

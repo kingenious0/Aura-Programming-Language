@@ -1,0 +1,57 @@
+# Aura Core Example: Grade Calculator
+# A complete program demonstrating all core features
+
+# Student data
+set student_name to "Alice"
+set math_score to 85
+set science_score to 92
+set english_score to 78
+
+# Calculate average
+set total to math_score + science_score
+set total to total + english_score
+set average to total / 3
+
+# Display welcome
+print "=== Grade Calculator ==="
+print "Student:"
+print student_name
+
+# Display individual scores
+print "Math:"
+print math_score
+print "Science:"
+print science_score
+print "English:"
+print english_score
+
+# Display average
+print "Average:"
+print average
+
+# Determine grade
+if average > 90
+    print "Grade: A - Excellent!"
+else
+    if average > 80
+        print "Grade: B - Good job!"
+    else
+        if average > 70
+            print "Grade: C - Keep working!"
+        else
+            print "Grade: D - Need improvement"
+
+# Function to show motivation
+define function motivate
+    print "=== Motivation ==="
+    if average > 85
+        print "Outstanding performance!"
+    else
+        print "You can do better!"
+
+call function motivate
+
+# Repeat message
+print "=== End of Report ==="
+repeat 3 times
+    print "*"

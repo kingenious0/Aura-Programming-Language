@@ -41,36 +41,181 @@ Dynamic: home-page
 Dynamic: license-file
 Dynamic: requires-python
 
-# AuraProgrammingLanguage
+<div align="center">
 
-An Aura project - build web apps using natural English!
+# ✨ Aura Programming Language ✨
 
-## Getting Started
+**The world's first natural language programming engine. Build web apps using plain English!**
+
+[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Community](https://img.shields.io/badge/community-standards-purple.svg?style=for-the-badge)](CODE_OF_CONDUCT.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange.svg?style=for-the-badge)](CONTRIBUTING.md)
+
+---
+
+[Explore Docs](docs/INDEX.md) • [Getting Started](docs/QUICKSTART.md) • [View Examples](examples/) • [Report Bug](.github/ISSUE_TEMPLATE/bug_report.md)
+
+</div>
+
+## 🌈 Why Aura?
+
+Aura is not just a framework—it's a **human interface to computation**. Write logic, build UIs, and create full applications using nothing but plain English.
+
+- **🗣️ Natural English Syntax**: No brackets, no semicolons. Just English.
+- **🧠 Dual-Mode Engine**: 
+  - **Core Logic**: Pure Python execution (variables, loops, functions)
+  - **UI Mode**: React/Vite web applications with premium design
+- **⚡ Brain-Powered**: Integrated AI (Qwen-0.5B) for intelligent syntax correction.
+- **🎨 Production-Ready**: Generates optimized, deployable code.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Installation
+Ensure you have Python 3.8+ installed.
 
 ```bash
-# Start the development server
+# Clone the repository
+git clone https://github.com/kingenious0/Aura-Programming-Language.git
+cd Aura-Programming-Language
+
+# Install in development mode
+pip install -e .
+```
+
+### 2. Choose Your Mode
+
+#### 🧠 **Core Logic Mode** (Pure Python)
+Create a file `logic.aura`:
+```aura
+set score to 10
+
+if score > 5
+    print "You win!"
+else
+    print "Try again"
+
+repeat 3 times
+    print "Aura is awesome!"
+```
+
+Run it:
+```bash
+aura run logic.aura        # Execute
+aura trace logic.aura      # Debug with output
+aura compile logic.aura    # Generate Python file
+```
+
+#### 🌐 **UI Mode** (React/Vite)
+Initialize a project:
+```bash
+aura init my-app
+cd my-app
+```
+
+Create a page `pages/Home.aura`:
+```aura
+Use the dark theme
+
+Create a heading with the text 'Welcome to the Future'
+Create a paragraph with the text 'This page was built using plain English.'
+
+Create a button with the text 'Click Me'
+When clicked, display 'Hello from Aura! 🎉'
+```
+
+Start developing:
+```bash
 aura dev
+```
+Open [http://localhost:5173](http://localhost:5173) to see your app live!
 
-# Open http://localhost:5173 in your browser
+---
+
+## 📝 The Aura Language
+
+### Core Logic (Phase 2 - NEW!)
+```aura
+# Variables
+set score to 10
+set name to "Aura"
+
+# Math
+set total to score * 2
+
+# Conditionals
+if total > 15
+    print "High score!"
+
+# Loops
+repeat 5 times
+    print "Hello"
+
+# Functions
+define function greet
+    print "Welcome to Aura"
+
+call function greet
 ```
 
-## Project Structure
+### UI Development (Phase 1)
+```aura
+Use the dark theme
 
-- `pages/` - Your .aura files (each file = one page)
-- `assets/` - Images, fonts, and other static files
-- `.aura_engine/` - Auto-managed React/Vite (don't edit)
+Create a heading with the text 'Welcome to the Future'
+Create a paragraph with the text 'This page was built using plain English.'
 
-## Adding Pages
+Create a button with the text 'Click Me'
+When clicked, display 'Hello from Aura! 🎉'
+```
 
-Just create a new `.aura` file in the `pages/` folder:
+---
+
+## 📂 Project Organization
+
+Aura projects are structured to be neat and intuitive:
+
+- `transpiler/` — The core engine logic (Parser, HTML Generator, CLI).
+- `docs/` — Comprehensive guides and technical specifications.
+- `examples/` — A library of Aura snippets to learn from.
+- `playground/` — A pre-configured project to test Aura live.
+- `tools/` — Utility scripts for debugging and specialized setups.
+- `vscode-extension/` — Official VS Code support for `.aura` syntax.
+
+---
+
+## 🎮 The Playground
+
+We've included a `playground/` directory so you can try Aura immediately without creating a new project.
 
 ```bash
-echo "Create a heading with the text 'Products'" > pages/Products.aura
+# Go to the playground
+cd playground
+
+# Start the dev server
+aura dev
 ```
 
-The page is instantly available at `/products`!
+---
 
-## Learn More
+## 🤝 Community Standards
 
-- [Aura Documentation](https://github.com/kingenious0/Aura-Programming-Language)
-- [Command Reference](../COMMAND_REFERENCE.md)
+We strive to maintain a high-quality, welcoming environment for everyone. 
+
+- **[Code of Conduct](CODE_OF_CONDUCT.md)**: Our commitment to a harassment-free experience.
+- **[Contributing](CONTRIBUTING.md)**: Guidelines for contributing code and features.
+- **[Security](SECURITY.md)**: How to report security vulnerabilities.
+
+---
+
+## 🛡️ License
+
+Aura is released under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+Built with ❤️ by <b>Kingenious</b>
+</div>

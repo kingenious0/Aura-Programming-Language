@@ -3,6 +3,14 @@
 .aura_brain/
 *.gguf
 
+# Generated files
+*.py  # Compiled Aura files
+!transpiler/*.py  # Except core engine files
+!setup.py
+dist/
+build/
+*.egg-info/
+
 # Python
 __pycache__/
 *.py[cod]

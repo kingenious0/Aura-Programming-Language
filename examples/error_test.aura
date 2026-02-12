@@ -1,0 +1,7 @@
+# Test runtime safety systems
+set x to 10
+print "X is"
+print x
+
+# This will cause an error - variable not defined
+print unknown_variable

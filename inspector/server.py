@@ -7,13 +7,9 @@ import json
 import asyncio
 import threading
 from typing import Optional, Set
-try:
-    import websockets
-    from websockets.server import WebSocketServerProtocol
-    WEBSOCKETS_AVAILABLE = True
-except ImportError:
-    WEBSOCKETS_AVAILABLE = False
-    print("⚠️  websockets not installed. Run: pip install websockets")
+import websockets
+from websockets.server import WebSocketServerProtocol
+WEBSOCKETS_AVAILABLE = True
 
 
 class InspectorServer:
@@ -53,20 +49,29 @@ class InspectorServer:
 
     def _run_server(self):
         """Run asyncio server in thread"""
+        async def start_server():
+            try:
+                async with websockets.serve(
+                    self._handle_client,
+                    self.host,
+                    self.port
+                ):
+                    print(
+                        f"✅ Inspector server running on ws://{self.host}:{self.port}")
+                    await asyncio.Future()  # Run forever
+            except OSError as e:
+                import sys
+                print(
+                    f"❌ Inspector Server failed to start: {e}", file=sys.stderr)
+                # We can't easily exit the main thread from here, but we must stop
+                import os
+                os._exit(1)
+
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
+        self.loop.run_until_complete(start_server())
 
-        start_server = websockets.serve(
-            self._handle_client,
-            self.host,
-            self.port
-        )
-
-        self.loop.run_until_complete(start_server)
-        print(f"✅ Inspector server running on ws://{self.host}:{self.port}")
-        self.loop.run_forever()
-
-    async def _handle_client(self, websocket: WebSocketServerProtocol, path: str):
+    async def _handle_client(self, websocket: WebSocketServerProtocol, path=None):
         """Handle WebSocket client connection"""
         self.clients.add(websocket)
         print(f"🔌 Client connected: {websocket.remote_address}")

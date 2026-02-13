@@ -1,0 +1,11 @@
+# Official Website for Aura
+
+official website for aura
+Create a button with the text "Launch Aura" | Create a card with the title "Aura 4.0: Design Intelligence" and description "Talk to your machine. Get beautiful software back."
+    
+feature "Intent Parsing" description "Aura understands what you want to build, not just where you want to put divs."
+feature "DIE Engine" description "The Design Intelligence Engine chooses premium typography, colors, and animations for you."
+feature "High-Fidelity Output" description "Production-grade React & Tailwind performance, hidden behind a human-readable interface."
+
+pricing "Personal" at "$0" features "Logic Engine, Visual Runtime, Live Inspector"
+pricing "Pro" at "$20/mo" features "Design Intelligence, AI UI Generation, Custom Domains"

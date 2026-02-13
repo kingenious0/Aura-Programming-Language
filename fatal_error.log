@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "C:\Users\kinge\AuraProgrammingLanguage\transpiler\cli.py", line 480, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\kinge\AuraProgrammingLanguage\transpiler\cli.py", line 387, in main
+    transpiler.build(sys.argv[2])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\kinge\AuraProgrammingLanguage\transpiler\transpiler.py", line 164, in build
+    self._generate_global_context(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        global_states if 'global_states' in locals() else {})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kinge\AuraProgrammingLanguage\transpiler\transpiler.py", line 415, in _generate_global_context
+    if isinstance(val, FetchNode):
+                       ^^^^^^^^^
+NameError: name 'FetchNode' is not defined

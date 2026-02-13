@@ -5,7 +5,10 @@ Pure representation, no rendering logic
 
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
-from transpiler.ast_nodes import ASTNode
+try:
+    from .ast_nodes import ASTNode
+except ImportError:
+    from ast_nodes import ASTNode
 
 
 @dataclass
@@ -108,3 +111,76 @@ class WhenHoveredNode(ASTNode):
 
     def __repr__(self):
         return f"<WhenHovered: {len(self.statements)} statements>"
+
+
+# === PHASE 6.0: ADVANCED UI ===
+
+@dataclass
+class TableNode(UINode):
+    """Data table: columns, sortable"""
+    columns: List[str]
+    is_sortable: bool = False
+
+    def __repr__(self):
+        return f"<Table columns={self.columns}>"
+
+
+@dataclass
+class GridNode(UINode):
+    """Responsive grid layout"""
+    items_expr: str  # e.g. "products from inventory"
+    children: List[UINode]
+
+    def __repr__(self):
+        return f"<Grid items='{self.items_expr}'>"
+
+
+@dataclass
+class LayoutBlockNode(UINode):
+    """Specialized layout area: sidebar, main, footer"""
+    block_type: str  # sidebar, main, header, footer
+    children: List[UINode]
+
+    def __repr__(self):
+        return f"<LayoutBlock '{self.block_type}'>"
+
+
+@dataclass
+class CardNode(UINode):
+    """Container with styles like hover, lift"""
+    children: List[UINode]
+    effects: List[str]  # hover, lift, etc.
+
+
+@dataclass
+class ListNode(UINode):
+    """Vertical list of items"""
+    items_expr: str
+    children: List[UINode]
+
+
+@dataclass
+class PanelNode(UINode):
+    """Themed container with title: panel 'Summary'"""
+    title: str
+    children: List[UINode]
+
+
+@dataclass
+class DividerNode(UINode):
+    """Horizontal line separator"""
+    pass
+
+
+@dataclass
+class IconNode(UINode):
+    """Visual icon: icon 'check-circle'"""
+    icon_name: str
+    size: str = "medium"
+    color: str = "currentColor"
+
+
+@dataclass
+class ImageNode(UINode):
+    """Display image: image 'url'"""
+    src: str

@@ -6,7 +6,8 @@ Transforms Aura AST into executable Python code
 from typing import List
 from .ast_nodes import (
     ASTNode, VariableNode, PrintNode, BinaryOpNode,
-    IfNode, LoopNode, FunctionDefNode, FunctionCallNode, Program
+    IfNode, LoopNode, FunctionDefNode, FunctionCallNode, Program,
+    FetchNode
 )
 
 
@@ -40,6 +41,9 @@ class PythonGenerator:
             return self._generate_function(node)
         elif isinstance(node, FunctionCallNode):
             return self._generate_function_call(node)
+        elif isinstance(node, FetchNode):
+            # For logic execution, we can skip or simulate fetch
+            return f"# Fetch from {node.source}"
         return ""
 
     def _indent(self) -> str:
@@ -128,6 +132,8 @@ class PythonGenerator:
                 else:
                     # It's a variable reference
                     return value
+        if isinstance(value, FetchNode):
+            return "[]"  # Return empty list for logic simulation of fetch
         return str(value)
 
     def _map_operator(self, op: str) -> str:
@@ -147,6 +153,7 @@ class AuraCore:
 
     def __init__(self):
         self.generator = PythonGenerator()
+        self.state = {}  # Runtime state dictionary
 
     def compile(self, program: Program) -> str:
         """Compile Aura AST to Python code"""
@@ -157,10 +164,18 @@ class AuraCore:
         python_code = self.compile(program)
         exec(python_code, {})
 
+    def execute_statement(self, statement: ASTNode) -> None:
+        """Execute a single statement"""
+        from .ast_nodes import Program
+        # Create a temporary program with just this statement
+        temp_program = Program(statements=[statement])
+        python_code = self.compile(temp_program)
+        # Execute with the runtime state
+        exec(python_code, self.state)
+
     def trace(self, program: Program) -> None:
         """Execute with step-by-step tracing"""
         python_code = self.compile(program)
-        print("=== Generated Python Code ===")
         print(python_code)
         print("\n=== Execution ===")
         exec(python_code, {})

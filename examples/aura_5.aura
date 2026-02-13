@@ -1,0 +1,16 @@
+# Aura 5.0 Official Site
+# Built using the Product Compiler Engine
+
+landing page for Aura 5.0 - The Universal Product Compiler
+Create a card with the title "Software stops being written. And starts being described." and description "Aura 5.0 turns your intent into production-ready web products." Click the "Launch Your Idea" button.
+    
+feature "The Intent Engine" description "Understands industry, tone, and depth to create a unique blueprint."
+feature "DIE Intelligence" description "Encoded good taste by default. No CSS, no templates, just custom design."
+feature "One-Sentence Apps" description "Describe your product in one sentence. Watch Aura ship it."
+
+pricing "Community" at "$0" features "Local Engine, Intent Blueprint, Standard Components"
+Create a card with the title "Founder" and description "Features Cloud Deploy, Custom Die Tokens, AI Copywriting" and create a button with the text "Create a Pricing Plan"
+
+cta "Describe your next product today." button "Start Building"
+
+Create a card with the title "Contact Us" and description "founder@aura.lang".

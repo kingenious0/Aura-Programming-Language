@@ -1,0 +1,37 @@
+app "Kingenious Store"
+
+layout shop_layout
+    sidebar
+        button "Home" goes to home
+        button "Shop" goes to shop
+        button "Cart" goes to cart
+    slot
+
+page home uses shop_layout
+    main
+        hero "Streetwear for creators"
+        button "Shop Now" goes to shop
+
+page shop uses shop_layout
+    main
+        text "Shop Inventory here"
+        grid items from inventory
+        button "View Blue Hoodie" goes to product_details
+
+page product_details(id) uses shop_layout
+    main
+        text "Product Page"
+        button "Add to Cart"
+        button "Back to shop" goes to shop
+
+page cart uses shop_layout
+    main
+        text "Your Shopping Cart"
+        button "Checkout" goes to checkout
+        button "Back to shop" goes to shop
+
+page checkout uses shop_layout
+    main
+        text "Checkout"
+        button "Back to cart" goes to cart
+        button "Pay" goes to payment

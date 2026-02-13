@@ -74,7 +74,7 @@ class RenderTree:
         bindings = []
 
         def collector(node):
-            if node.binding:
+            if hasattr(node, 'binding') and node.binding:
                 bindings.append(node.binding)
 
         self.traverse(collector)

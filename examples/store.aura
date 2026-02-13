@@ -1,0 +1,81 @@
+# 1. APPLICATION CONFIGURATION
+app "Kingenious Store"
+  theme "Modern Shop"
+  primary color "#12aea1ff"
+
+# 2. GLOBAL STATE (The Brain)
+set cart to []
+set products to fetch from "inventory.json" 
+
+# 3. THE LAYOUT (Persistent Shell)
+layout main_shop
+  header
+    logo "AuraCommerce"
+    
+    # Navigation Logic
+    row
+      link "Shop" goes to home
+      link "Cart (" + cart.length + ")" goes to checkout
+      
+  slot # This is where pages render dynamically
+
+# 4. PAGE: HOME (The Storefront)
+page home uses main_shop
+  hero "Future of Retail" subtitle "Built with Aura 6.0" height "small"
+
+  section "New Arrivals"
+    # The Data Grid Component
+    grid products columns 3
+      card hover lift
+        image item.image
+        text item.name
+        text "$" + item.price
+        
+        button "Add to Cart"
+          when clicked
+            add item to cart
+            notify "Added " + item.name + " to cart"
+
+# 5. PAGE: CHECKOUT (The Logic Heavyweight)
+page checkout uses main_shop
+  columns 2
+    # Column 1: Cart Items
+    stack
+      heading "Your Cart"
+      
+      if cart is empty
+        text "Your cart is empty." 
+        button "Go Shopping" goes to home
+      else
+        list cart
+          row
+            text item.name
+            text "$" + item.price
+            button "Remove"
+              when clicked
+                remove item from cart
+    
+    # Column 2: Order Summary
+    panel "Order Summary"
+      row
+        text "Subtotal"
+        text "$" + sum(cart.price)
+      
+      divider
+      
+      input "Email Address"
+      input "Card Number"
+      
+      button "Pay Now"
+        when clicked
+          # process payment (magic)
+          set cart to []
+          goes to success_page
+
+# 6. PAGE: SUCCESS
+page success_page uses main_shop
+  column
+    icon "check-circle" size "huge" color "green"
+    heading "Order Confirmed!"
+    text "We've sent a receipt to your email."
+    button "Continue Shopping" goes to home

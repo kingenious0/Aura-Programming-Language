@@ -3,6 +3,10 @@ Visual Dev Server - Live development server for Aura visual apps
 HTTP server + WebSocket for live updates
 """
 
+from visual.events import EventBridge
+from visual.web_renderer import WebRenderer
+from visual.engine import VisualRuntimeEngine
+from runtime import AuraRuntime
 import asyncio
 import json
 import threading
@@ -12,18 +16,9 @@ from typing import Optional, Set
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import socket
 
-try:
-    import websockets
-    from websockets.server import WebSocketServerProtocol
-    WEBSOCKETS_AVAILABLE = True
-except ImportError:
-    WEBSOCKETS_AVAILABLE = False
-    print("⚠️  websockets not installed. Run: pip install websockets")
-
-from runtime import AuraRuntime
-from visual.engine import VisualRuntimeEngine
-from visual.web_renderer import WebRenderer
-from visual.events import EventBridge
+import websockets
+from websockets.server import WebSocketServerProtocol
+WEBSOCKETS_AVAILABLE = True
 
 
 class VisualDevServer:
@@ -44,7 +39,7 @@ class VisualDevServer:
         # Initialize runtime
         self.runtime = AuraRuntime()
         self.vre = VisualRuntimeEngine(self.runtime)
-        self.renderer = WebRenderer(self.runtime)
+        self.renderer = WebRenderer(self.runtime, vre=self.vre)
         self.event_bridge = EventBridge(self.runtime, self.vre)
 
         # WebSocket clients
@@ -70,9 +65,15 @@ class VisualDevServer:
         import time
         time.sleep(0.5)
 
+        # Check if WebSocket thread is still alive (didn't crash immediately)
+        if not ws_thread.is_alive():
+            print("❌ WebSocket server failed to start. Port busy?")
+            return
+
         # Open browser
         url = f"http://localhost:{self.port}"
         print(f"\n✅ Visual app running on {url}")
+        print(f"   (WebSocket on port {self.ws_port} - Internal Use Only)")
         print(f"   Press Ctrl+C to stop\n")
 
         # Serve HTML page
@@ -88,7 +89,6 @@ class VisualDevServer:
         # Execute logic statements
         from transpiler.core import AuraCore
         core = AuraCore()
-        core.state = self.runtime.state
 
         # Separate logic and UI
         logic_statements = []
@@ -104,7 +104,17 @@ class VisualDevServer:
 
         # Execute logic
         for stmt in logic_statements:
-            core.execute_statement(stmt)
+            try:
+                core.execute_statement(stmt)
+                # Sync variables to runtime state
+                for var_name, var_value in core.state.items():
+                    if not var_name.startswith('__'):  # Skip built-in names
+                        self.runtime.state.set_var(var_name, var_value)
+            except Exception as e:
+                import traceback
+                print(f"❌ Error executing statement: {stmt}")
+                traceback.print_exc()
+                raise
 
         # Load UI
         if ui_node:
@@ -139,19 +149,29 @@ class VisualDevServer:
 
     def _run_websocket(self):
         """Run WebSocket server in thread"""
+        async def start_server():
+            try:
+                async with websockets.serve(
+                    self._handle_ws_client,
+                    'localhost',
+                    self.ws_port
+                ):
+                    await asyncio.Future()  # Run forever
+            except OSError as e:
+                if e.winerror == 10048:
+                    print(
+                        f"\n❌ WebSocket Port {self.ws_port} is busy. Please close other instances.")
+                else:
+                    print(f"\n❌ WebSocket Error: {e}")
+                # We can't easily exit the main thread from here, but we can print basic info
+                import os
+                os._exit(1)
+
         self.ws_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.ws_loop)
+        self.ws_loop.run_until_complete(start_server())
 
-        start_server = websockets.serve(
-            self._handle_ws_client,
-            'localhost',
-            self.ws_port
-        )
-
-        self.ws_loop.run_until_complete(start_server)
-        self.ws_loop.run_forever()
-
-    async def _handle_ws_client(self, websocket: WebSocketServerProtocol, path: str):
+    async def _handle_ws_client(self, websocket: WebSocketServerProtocol, path=None):
         """Handle WebSocket client connection"""
         self.clients.add(websocket)
         print(f"🔌 Client connected")

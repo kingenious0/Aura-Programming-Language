@@ -15,6 +15,7 @@ from runtime.memory import ResourceTracker, ResourceLimits
 from runtime.errors import AuraError, ErrorContext, safe_execute
 from runtime.time_engine import TimeEngine
 from runtime.recorder import ExecutionRecorder
+from ui.binder import UIBinder
 from transpiler.ast_nodes import Program, ASTNode, FunctionDefNode, FunctionCallNode
 
 
@@ -36,6 +37,7 @@ class AuraRuntime:
         self.resource_tracker = ResourceTracker(limits)
 
         # Phase 3.0: Observability & Time Travel
+        self.ui_binder = UIBinder(self)
         self.time_engine = TimeEngine()
         self.recorder = ExecutionRecorder()
         self.observable_hooks: List[Callable] = []  # User callbacks

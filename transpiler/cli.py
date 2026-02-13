@@ -11,6 +11,13 @@ PROJECT_ROOT = Path(__file__).parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# Ensure UTF-8 output for Windows consoles
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 
 def print_version():
     """Print Aura version"""
@@ -153,16 +160,21 @@ def main():
         # UI Dev Server (existing behavior)
         from transpiler.dev_server import AuraDevServer
 
-        # Check if we're in a project with pages/ folder
-        project_dir = Path.cwd()
-        pages_dir = project_dir / 'pages'
+        target = sys.argv[2] if len(sys.argv) > 2 else "."
+        target_path = Path(target).resolve()
 
-        if pages_dir.exists():
-            # Watch the pages/ folder
-            dev_server = AuraDevServer(pages_dir)
-        else:
-            # Watch current directory (legacy mode)
-            dev_server = AuraDevServer(project_dir)
+        watch_dir = target_path
+        initial_file = None
+
+        if target_path.is_file() and target_path.suffix == '.aura':
+            watch_dir = target_path.parent
+            initial_file = str(target_path)
+
+        pages_dir = watch_dir / 'pages'
+        if pages_dir.exists() and not initial_file:
+            watch_dir = pages_dir
+
+        dev_server = AuraDevServer(watch_dir, initial_file=initial_file)
 
         dev_server.start()
         sys.exit(0)
@@ -179,16 +191,19 @@ def main():
 
     # Phase 3.0: Inspector command
     if command == 'inspect':
-        print("🔍 Starting Aura Inspector...")
-        import webbrowser
-        from pathlib import Path
+        print("Starting Aura Inspector...")
+        try:
+            import webbrowser
 
-        # Get inspector HTML path
-        inspector_path = Path(__file__).parent.parent / \
-            'inspector' / 'web' / 'index.html'
+            # Get inspector HTML path
+            inspector_path = Path(__file__).parent.parent / \
+                'inspector' / 'web' / 'index.html'
 
-        # Start inspector server
-        from inspector.server import InspectorServer
+            from inspector.server import InspectorServer
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
         from runtime import AuraRuntime
 
         runtime = AuraRuntime()
@@ -228,11 +243,25 @@ def main():
         from visual.dev_server import VisualDevServer
 
         try:
-            server = VisualDevServer(filepath, port=3000)
+            server = VisualDevServer(filepath, port=8081)
             server.start()
         except ImportError as e:
             print(f"❌ {e}")
+            import traceback
+            traceback.print_exc()
             print("   Install with: pip install websockets")
+            sys.exit(1)
+        except OSError as e:
+            if e.winerror == 10048 or e.winerror == 10013:
+                print(
+                    f"❌ Port 8081 is busy or restricted. Please try closing other applications.")
+            else:
+                print(f"❌ Network error: {e}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"❌ Unexpected Error: {e}")
+            import traceback
+            traceback.print_exc()
             sys.exit(1)
         except KeyboardInterrupt:
             print("\n⚠️  Stopping visual server...")
@@ -272,10 +301,21 @@ def main():
                 traceback.print_exc()
                 sys.exit(1)
         else:
-            # UI Mode (existing behavior)
-            from transpiler.transpiler import AuraTranspiler
-            transpiler = AuraTranspiler()
-            transpiler.run(filepath)
+            # UI Mode: Automatically use Dev Server experience for "Run"
+            from transpiler.dev_server import AuraDevServer
+            print("🚀 Launching Aura UI with Hot-Reload...")
+
+            target_path = Path(filepath).resolve()
+            watch_dir = target_path.parent
+
+            # Check for pages/ folder
+            pages_dir = watch_dir / 'pages'
+            if pages_dir.exists():
+                watch_dir = pages_dir
+
+            dev_server = AuraDevServer(
+                watch_dir, initial_file=str(target_path))
+            dev_server.start()
 
         sys.exit(0)
 
@@ -389,9 +429,27 @@ def main():
 
     # Handle direct .aura file (legacy support)
     if command.endswith('.aura'):
-        from transpiler.transpiler import AuraTranspiler
-        transpiler = AuraTranspiler()
-        transpiler.run(command)
+        filepath = command
+        if not Path(filepath).exists():
+            print(f"❌ Error: File not found: {filepath}")
+            sys.exit(1)
+
+        is_logic = _is_logic_file(filepath)
+        if is_logic:
+            from transpiler.logic_parser import LogicParser
+            from transpiler.core import AuraCore
+            parser = LogicParser()
+            core = AuraCore()
+            program = parser.parse_file(filepath)
+            core.execute(program)
+        else:
+            from transpiler.dev_server import AuraDevServer
+            print("🚀 Launching Aura UI...")
+            target_path = Path(filepath).resolve()
+            watch_dir = target_path.parent
+            dev_server = AuraDevServer(
+                watch_dir, initial_file=str(target_path))
+            dev_server.start()
         sys.exit(0)
 
     # Unknown command
@@ -404,7 +462,8 @@ def _is_logic_file(filepath: str) -> bool:
     """Detect if a .aura file contains logic or UI commands"""
     logic_keywords = ['set ', 'if ', 'print ',
                       'repeat ', 'define function', 'call function']
-    ui_keywords = ['Create a', 'Use the', 'When clicked', 'show ']
+    ui_keywords = ['Create a', 'Use the', 'When clicked', 'show ',
+                   'hero ', 'feature ', 'pricing ', 'landing page ', 'website ']
 
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -417,4 +476,10 @@ def _is_logic_file(filepath: str) -> bool:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        with open('fatal_error.log', 'w') as f:
+            import traceback
+            traceback.print_exc(file=f)
+        sys.exit(1)

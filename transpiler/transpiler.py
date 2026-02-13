@@ -8,10 +8,14 @@ from tqdm import tqdm
 
 try:
     from .aura_parser import AuraParser
+    from .logic_parser import LogicParser
     from .html_generator import HTMLGenerator
+    from .ast_nodes import AppNode, PageNode, Program, LayoutNode, SlotNode, VariableNode, FetchNode
 except ImportError:
     from aura_parser import AuraParser
+    from logic_parser import LogicParser
     from html_generator import HTMLGenerator
+    from ast_nodes import AppNode, PageNode, Program, LayoutNode, SlotNode, VariableNode, FetchNode
 
 
 class AuraTranspiler:
@@ -19,6 +23,7 @@ class AuraTranspiler:
 
     def __init__(self):
         self.parser = AuraParser()
+        self.logic_parser = LogicParser()
 
     def build(self, input_file: str):
         """Builds the entire project (Multi-page support + Global Navbar)"""
@@ -30,37 +35,110 @@ class AuraTranspiler:
 
         home_page_name = Path(input_file).stem
         input_dir = os.path.dirname(os.path.abspath(input_file))
-        aura_files = glob.glob(os.path.join(input_dir, "*.aura"))
 
-        # print(
-        #     f"[Scan] Found {len(aura_files)} pages: {[Path(f).stem for f in aura_files]}")
+        # Determine files to process: Only folder if in 'pages/', otherwise just the file
+        if os.path.basename(input_dir) == 'pages':
+            aura_files = glob.glob(os.path.join(input_dir, "*.aura"))
+        else:
+            aura_files = [input_file]
 
         pages = {}
-        global_navbar = None  # { 'links': 'Home, About', 'logo': '...' }
+        layouts = {}
+        global_navbar = None
+
+        # Helper to set home page correctly
+        actual_home_page = None
 
         try:
-            with tqdm(total=len(aura_files), desc="🚀 Building Project", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} pages") as pbar:
+            with tqdm(total=len(aura_files), desc="🚀 Building Project", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} files") as pbar:
                 for file_path in aura_files:
                     name = Path(file_path).stem
-                    clean_name = name.replace(' ', '').replace(
-                        '_', '').replace('-', '')
-                    comp_name = clean_name[0].upper(
-                    ) + clean_name[1:] if clean_name else "Page"
-                    if not comp_name[0].isalpha():
-                        comp_name = "Page" + comp_name
+                    pbar.set_description(f"🚀 Scanning {name}")
 
-                    pbar.set_description(f"🚀 Building {name}")
-                    # print(f"  - Compiling {name} -> {comp_name}...")
-                    commands = self.parser.parse_file(file_path)
+                    # 🧠 Aura 6.0: Try structural parsing first
+                    program = self.logic_parser.parse_file(file_path)
 
-                    # Check for Global Navbar Definition
-                    for cmd in commands:
-                        if cmd.command_type == 'ui_navbar':
-                            global_navbar = cmd.data
+                    # Look for AppNode or PageNodes
+                    structural_pages = []
+                    structural_layouts = []
+                    global_states = {}
+                    app_node = None
+                    for stmt in program.statements:
+                        if isinstance(stmt, AppNode):
+                            app_node = stmt
+                            for p in stmt.pages:
+                                if isinstance(p, PageNode):
+                                    structural_pages.append(p)
+                                elif isinstance(p, LayoutNode):
+                                    structural_layouts.append(p)
+                                elif isinstance(p, VariableNode):
+                                    global_states[p.name] = p.value
+                        elif isinstance(stmt, PageNode):
+                            structural_pages.append(stmt)
+                        elif isinstance(stmt, LayoutNode):
+                            structural_layouts.append(stmt)
+                        elif isinstance(stmt, VariableNode):
+                            global_states[stmt.name] = stmt.value
 
-                    generator = HTMLGenerator(component_name=comp_name)
-                    jsx = generator.generate(commands)
-                    pages[name] = {'comp': comp_name, 'code': jsx}
+                    if structural_pages or structural_layouts:
+                        # Process Layouts first
+                        for layout in structural_layouts:
+                            l_name = layout.name
+                            clean_l_name = l_name.replace(
+                                ' ', '').replace('_', '').replace('-', '')
+                            comp_name = clean_l_name[0].upper(
+                            ) + clean_l_name[1:] if clean_l_name else "Layout"
+                            if not comp_name.endswith('Layout'):
+                                comp_name += 'Layout'
+
+                            generator = HTMLGenerator(
+                                component_name=comp_name, shared_states=global_states)
+                            jsx = generator.generate(layout)
+                            layouts[l_name] = {'comp': comp_name, 'code': jsx}
+
+                        # Structural Build
+                        for page in structural_pages:
+                            p_name = page.name
+                            clean_p_name = p_name.replace(
+                                ' ', '').replace('_', '').replace('-', '')
+                            comp_name = clean_p_name[0].upper(
+                            ) + clean_p_name[1:] if clean_p_name else "Page"
+
+                            generator = HTMLGenerator(
+                                component_name=comp_name,
+                                params=getattr(page, 'params', []),
+                                shared_states=global_states)
+                            jsx = generator.generate(page)
+                            pages[p_name] = {
+                                'comp': comp_name, 'code': jsx, 'params': getattr(page, 'params', [])}
+
+                            # Set initial home page or explicit 'home'
+                            if not actual_home_page:
+                                actual_home_page = p_name
+                            if p_name.lower() == 'home':
+                                actual_home_page = p_name
+
+                    else:
+                        # Legacy/Hybrid Build (Single file = Single page)
+                        clean_name = name.replace(' ', '').replace(
+                            '_', '').replace('-', '')
+                        comp_name = clean_name[0].upper(
+                        ) + clean_name[1:] if clean_name else "Page"
+
+                        commands = self.parser.parse_file(file_path)
+
+                        # Check for Global Navbar Definition in legacy commands
+                        for cmd in commands:
+                            if hasattr(cmd, 'command_type') and cmd.command_type == 'ui_navbar':
+                                global_navbar = cmd.data
+
+                        generator = HTMLGenerator(component_name=comp_name)
+                        jsx = generator.generate(commands)
+                        pages[name] = {'comp': comp_name, 'code': jsx}
+
+                        if not actual_home_page:
+                            actual_home_page = name
+
                     pbar.update(1)
 
         except Exception as e:
@@ -70,14 +148,23 @@ class AuraTranspiler:
         self._ensure_engine_structure()
 
         pages_dir = os.path.join(self.ENGINE_DIR, 'src', 'pages')
+        layouts_dir = os.path.join(self.ENGINE_DIR, 'src', 'layouts')
         os.makedirs(pages_dir, exist_ok=True)
+        os.makedirs(layouts_dir, exist_ok=True)
+
+        for name, data in layouts.items():
+            out_path = os.path.join(layouts_dir, f"{data['comp']}.jsx")
+            self._write_file(out_path, data['code'])
 
         for name, data in pages.items():
             out_path = os.path.join(pages_dir, f"{data['comp']}.jsx")
             self._write_file(out_path, data['code'])
 
-        # Generate Router and Navbar
-        self._generate_router(pages, home_page_name, global_navbar)
+        # Generate Context and Router
+        self._generate_global_context(
+            global_states if 'global_states' in locals() else {})
+        self._generate_router(
+            pages, actual_home_page or home_page_name, global_navbar)
 
         # print("[Build] Project Updated.")
         return True
@@ -105,9 +192,14 @@ class AuraTranspiler:
 
         for name, data in pages.items():
             comp = data['comp']
+            params = data.get('params', [])
             imports.append(f"import {comp} from './pages/{comp}';")
-            path = f"/{name.lower()}"
-            if name == home_page_name:
+
+            # Build path with params
+            param_path = "".join([f"/:{p}" for p in params])
+            path = f"/{name.lower()}{param_path}"
+
+            if name == home_page_name and not params:
                 path = "/"
                 home_comp = comp
             routes.append(f'<Route path="{path}" element={{<{comp} />}} />')
@@ -122,18 +214,19 @@ class AuraTranspiler:
 
         router_code = f"""import React from 'react';
 import {{ Routes, Route }} from 'react-router-dom';
+import {{ GlobalStateProvider }} from './context/GlobalContext';
 {navbar_import}
 {chr(10).join(imports)}
 
 export default function App() {{
   return (
-    <>
+    <GlobalStateProvider>
       {navbar_element}
       <Routes>
         {chr(10).join(routes)}
         {f'<Route path="*" element={{<{home_comp} />}} />' if home_comp else ''}
       </Routes>
-    </>
+    </GlobalStateProvider>
   );
 }}
 """
@@ -309,6 +402,58 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except:
             pass
+
+    def _generate_global_context(self, global_states):
+        context_dir = os.path.join(self.ENGINE_DIR, 'src', 'context')
+        os.makedirs(context_dir, exist_ok=True)
+
+        states_init = []
+        context_values = []
+        effects = []
+
+        for name, val in global_states.items():
+            setter = f"set{name.capitalize()}"
+            if isinstance(val, FetchNode):
+                initial = "[]"
+                # Add useEffect for fetching
+                effects.append(f"""    useEffect(() => {{
+        fetch('{val.source}').then(res => res.json()).then(data => {setter}(data));
+    }}, []);""")
+            elif isinstance(val, (list, dict)):
+                initial = json.dumps(val)
+            elif isinstance(val, (int, float)):
+                initial = str(val)
+            else:
+                initial = f"'{val}'"
+
+            states_init.append(
+                f"    const [{name}, {setter}] = useState({initial});")
+            context_values.append(name)
+            context_values.append(setter)
+
+        states_code = "\n".join(states_init)
+        effects_code = "\n".join(effects)
+        values_code = ", ".join(context_values)
+
+        code = f"""import React, {{ createContext, useContext, useState, useEffect }} from 'react';
+
+const GlobalStateContext = createContext();
+
+export const GlobalStateProvider = ({{ children }}) => {{
+{states_code}
+
+{effects_code}
+
+    return (
+        <GlobalStateContext.Provider value={{{{ {values_code} }}}}>
+            {{children}}
+        </GlobalStateContext.Provider>
+    );
+}};
+
+export const useGlobalState = () => useContext(GlobalStateContext);
+"""
+        self._write_file(os.path.join(context_dir, 'GlobalContext.jsx'), code)
 
 
 def main():

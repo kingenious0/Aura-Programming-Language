@@ -20,8 +20,10 @@ except ImportError:
 class AuraDevServer(FileSystemEventHandler):
     """Watches .aura files and triggers hot reload"""
 
-    def __init__(self, project_dir: Path):
-        self.project_dir = project_dir
+    def __init__(self, watch_dir: Path, initial_file: str = None):
+        self.watch_dir = watch_dir
+        self.root_dir = Path.cwd()
+        self.initial_file = initial_file
         self.transpiler = AuraTranspiler()
         self.vite_process = None
         self.last_build_time = 0
@@ -30,13 +32,15 @@ class AuraDevServer(FileSystemEventHandler):
         print("\n" + "="*60)
         print("  🚀 AURA DEV SERVER")
         print("="*60)
-        print(f"  Watching: {project_dir}")
+        print(f"  Watching: {watch_dir}")
+        if initial_file:
+            print(f"  Target: {Path(initial_file).name}")
         print("  Press Ctrl+C to stop")
         print("="*60 + "\n")
 
     def start(self):
         """Start the dev server"""
-        # Initial build of all pages
+        # Initial build of the targeted file or directory
         self._build_all_pages()
 
         # Start Vite dev server
@@ -44,11 +48,11 @@ class AuraDevServer(FileSystemEventHandler):
 
         # Start file watcher
         observer = Observer()
-        observer.schedule(self, str(self.project_dir), recursive=False)
+        observer.schedule(self, str(self.watch_dir), recursive=False)
         observer.start()
 
         print(f"\n✓ Dev server running at http://localhost:5173")
-        print(f"✓ Watching for .aura file changes...\n")
+        print(f"✓ Watching for .aura file changes in {self.watch_dir.name}/\n")
 
         try:
             while True:
@@ -65,6 +69,10 @@ class AuraDevServer(FileSystemEventHandler):
         if event.is_directory or not event.src_path.endswith('.aura'):
             return
 
+        # Only rebuild if we aren't targeting a specific file, or if it IS that file
+        if self.initial_file and Path(event.src_path).resolve() != Path(self.initial_file).resolve():
+            return
+
         file_path = Path(event.src_path)
         print(f"\n[NEW FILE] {file_path.name}")
         self._rebuild_project()
@@ -72,6 +80,10 @@ class AuraDevServer(FileSystemEventHandler):
     def on_modified(self, event):
         """Handle .aura file modification"""
         if event.is_directory or not event.src_path.endswith('.aura'):
+            return
+
+        # Only rebuild if we aren't targeting a specific file, or if it IS that file
+        if self.initial_file and Path(event.src_path).resolve() != Path(self.initial_file).resolve():
             return
 
         # Debounce rapid saves
@@ -84,20 +96,20 @@ class AuraDevServer(FileSystemEventHandler):
         self._rebuild_project()
         self.last_build_time = current_time
 
-    def on_deleted(self, event):
-        """Handle .aura file deletion"""
-        if event.is_directory or not event.src_path.endswith('.aura'):
+    def _build_all_pages(self):
+        """Build the target files"""
+        if self.initial_file:
+            print(
+                f"[BUILD] Transpiling target: {Path(self.initial_file).name}")
+            try:
+                self.transpiler.build(self.initial_file)
+                print("✓ Build complete")
+            except Exception as e:
+                print(f"✗ Build failed: {e}")
             return
 
-        file_path = Path(event.src_path)
-        print(f"\n[DELETED] {file_path.name}")
-        self._rebuild_project()
-
-    def _build_all_pages(self):
-        """Build all .aura files in the project"""
         print("[BUILD] Scanning for .aura files...")
-
-        aura_files = list(self.project_dir.glob('*.aura'))
+        aura_files = list(self.watch_dir.glob('*.aura'))
 
         if not aura_files:
             print("  ⚠️ No .aura files found in current directory")
@@ -108,30 +120,23 @@ class AuraDevServer(FileSystemEventHandler):
         for aura_file in aura_files:
             print(f"  - {aura_file.stem}")
 
-        # Build the project (transpiler handles all files)
-        try:
-            # Build triggers full scan
-            self.transpiler.build(str(aura_files[0]))
-            print("\n✓ Build complete")
-        except Exception as e:
-            print(f"\n✗ Build failed: {e}")
-
     def _rebuild_project(self):
-        """Rebuild the entire project"""
+        """Rebuild the targeted project"""
         print("  [REBUILD] Transpiling...")
-
         try:
-            # Find any .aura file to trigger full rebuild
-            aura_files = list(self.project_dir.glob('*.aura'))
-            if aura_files:
-                self.transpiler.build(str(aura_files[0]))
-                print("  ✓ Hot reload triggered")
+            target = self.initial_file if self.initial_file else str(
+                list(self.watch_dir.glob('*.aura'))[0])
+            self.transpiler.build(target)
+            print("  ✓ Hot reload triggered")
         except Exception as e:
             print(f"  ✗ Error: {e}")
 
     def _start_vite(self):
         """Start the Vite dev server"""
-        engine_dir = self.project_dir / '.aura_engine'
+        # Look for engine in watch_dir first, then fall back to root
+        engine_dir = self.watch_dir / '.aura_engine'
+        if not engine_dir.exists():
+            engine_dir = self.root_dir / '.aura_engine'
 
         if not engine_dir.exists():
             print("  ⚠️ .aura_engine not found. Run a build first.")
